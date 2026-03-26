@@ -1,0 +1,21 @@
+producto_id,nombre,categoria,precio,costo,origen_cafe
+P001,Espresso,bebida_caliente,4500,1200,Huila
+P002,Americano,bebida_caliente,5000,1300,Huila
+P003,Cappuccino,bebida_caliente,7500,2100,Nariño
+P004,Latte,bebida_caliente,8000,2300,Nariño
+P005,Mocaccino,bebida_caliente,8500,2500,Cauca
+P006,Café Helado,bebida_fria,9000,2400,Huila
+P007,Frappé de Café,bebida_fria,11000,3200,Cauca
+P008,Limonada de Café,bebida_fria,9500,2600,Nariño
+P009,Croissant,panaderia,6000,2000,N/A
+P010,Brownie,panaderia,5500,1800,N/A
+P011,Cheesecake,panaderia,8000,2800,N/A
+P012,Sandwich Caprese,comida,12000,4500,N/A
+P013,Ensalada César,comida,14000,5200,N/A
+P014,Wrap de Pollo,comida,13000,4800,N/A
+P015,Agua Botella,otro,3000,1200,N/A
+P016,Jugo Natural,otro,7000,2500,N/A
+P017,Té Chai Latte,bebida_caliente,8500,2400,N/A
+P018,Chocolate Caliente,bebida_caliente,7000,2000,N/A
+P019,Granola Bowl,comida,11000,3800,N/A
+P020,Torta de Zanahoria,panaderia,6500,2200,N/A
