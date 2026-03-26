@@ -60,7 +60,7 @@ with st.sidebar:
     )
 
     st.divider()
-    st.caption("Master Class SENA 2026")
+    st.caption("Master Class 2026")
     st.caption("Analisis de Datos con Databricks + IA")
 
 # ─────────────────────────────────────────────
@@ -361,7 +361,7 @@ with rec3:
 st.divider()
 st.markdown("""
 <div style='text-align: center; color: #8B6F47; padding: 20px;'>
-    <strong>Master Class SENA 2026</strong> | Analisis de Datos con Databricks + IA<br>
+    <strong>Master Class 2026</strong> | Analisis de Datos con Databricks + IA<br>
     Dashboard generado con Python + Streamlit | Datos analizados en Databricks<br>
     <em>"La IA genera el codigo, tu haces las preguntas correctas"</em>
 </div>
