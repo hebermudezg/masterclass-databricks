@@ -1,225 +1,212 @@
 # Guia del Presentador - Master Class Cafe Origen
 
 ## Formato: Demo en vivo (tu presentas, ellos observan)
-
-La audiencia NO necesita cuenta ni seguir en su computador.
-Tu haces todo en pantalla compartida. Ellos aprenden observando.
-Al final les compartes los archivos para que repliquen en su tiempo.
+## Plataforma: Databricks Trial (Premium) - TODO dentro de Databricks
 
 ---
 
-## Antes de la sesion (preparacion)
+## Antes de la sesion
 
-### Tu setup (hacer antes del 16 de abril):
-1. **Databricks:** Crear cuenta Community Edition, cluster listo, CSVs subidos, notebooks importados
-2. **Streamlit:** Dashboard desplegado en Streamlit Cloud con URL publica
-3. **Backup:** Screenshots de cada resultado por si el cluster falla
-4. **Probar:** Ejecutar los 4 notebooks completos al menos una vez antes
+### Timeline:
+- **14 abril:** Activar trial de Databricks (ver `guia_trial_databricks.md`)
+- **14-15 abril:** Subir datos, ejecutar notebooks, crear dashboard y Genie
+- **16 abril 7PM:** Master class
 
-### Lo que compartes DESPUES de la sesion:
-- Link al repo de GitHub (con notebooks + CSV + Streamlit app)
-- Link al dashboard desplegado
-- Esta guia si quieren
+### Tu setup:
+1. Trial activado, workspace funcionando
+2. SQL Warehouse encendido
+3. CSVs subidos, notebooks importados
+4. Notebook 04_sql_dashboard ejecutado (tablas creadas)
+5. SQL Dashboard creado y con graficos
+6. Genie Space configurado con la tabla `cafe_origen.ventas_completas`
+7. Todo probado al menos una vez
+
+### Tener abiertos:
+- Tab 1: Notebook 00_setup
+- Tab 2: Notebook 01_exploracion
+- Tab 3: Notebook 02_transformaciones
+- Tab 4: SQL Dashboard
+- Tab 5: Genie
 
 ---
 
 ## LA HISTORIA
 
-El hilo narrativo de toda la sesion es este:
-
 > **Tu eres el nuevo analista de datos de "Cafe Origen"**, una cadena de cafeterias colombiana
 > con 5 sucursales. La gerente general, Dona Marta, te contrato porque las ventas han estado
 > raras y necesita respuestas ANTES de decidir si abre una 6ta sucursal.
 >
-> Tu mision: en 2 horas, darle a Dona Marta un reporte con datos que la ayude a decidir.
+> Tu mision: darle a Dona Marta un reporte con datos.
 > Tu arma secreta: Databricks + Inteligencia Artificial.
-
-Cada bloque responde una pregunta de "Dona Marta". Esto le da ritmo y proposito a todo.
 
 ---
 
-## BLOQUE 1: Intro - "Dona Marta nos contrato" (10 min)
+## BLOQUE 1: "Dona Marta nos contrato" (10 min)
 
 ### Que decir:
 
-> "Buenas noches a todos. Imaginen esto: los acaban de contratar como analistas de datos
+> "Buenas noches. Imaginen esto: los acaban de contratar como analistas de datos
 > en Cafe Origen, una cadena de cafeterias colombiana. La gerente, Dona Marta, les dice:
 > 'Necesito saber como van mis ventas, que producto me da mas plata, y si deberia abrir
-> otra sucursal. Tienen hasta manana.'
+> otra sucursal.'
 >
-> Hoy vamos a resolver eso EN VIVO. Vamos a usar Databricks, que es una plataforma
-> profesional de analisis de datos en la nube, y vamos a dejar que la IA nos escriba
-> el codigo. Lo unico que necesitamos es hacer las preguntas correctas."
+> Hoy vamos a resolver eso EN VIVO usando Databricks, que es una plataforma profesional
+> de datos, y vamos a dejar que la Inteligencia Artificial nos escriba el codigo."
 
-### Puntos rapidos:
-- **Databricks** = notebook en la nube con superpoderes (Apache Spark)
-- **Databricks Assistant** = IA que genera codigo PySpark/SQL a partir de texto
-- **Community Edition** = gratis, sin tarjeta de credito
-- Hoy NO van a necesitar abrir nada. Solo observen. Les comparto todo despues.
+### Puntos clave:
+- **Databricks** = plataforma unificada de datos. Netflix, Shell, T-Mobile la usan.
+- **Databricks Assistant** = IA integrada que genera codigo a partir de texto
+- **Genie** = IA que responde preguntas de negocio sin codigo (el wow del final)
+- Hoy NO necesitan abrir nada. Solo observen.
 
 ---
 
-## BLOQUE 2: "Primero, veamos que datos tenemos" (15 min)
+## BLOQUE 2: "Veamos que datos tenemos" (15 min)
 
 ### Dona Marta dice:
-> "Aqui tienen los datos de ventas de los ultimos 9 meses. Haganle."
+> "Aqui tienen los datos de ventas de los ultimos 9 meses."
 
 ### Ejecutar notebook 00_setup:
-1. Mostrar rapidamente los 3 archivos CSV en pantalla
-2. Ejecutar la carga - comentar cada paso
-3. Mostrar las 3 tablas: ventas (4,700 registros), productos (20), sucursales (5)
+- Mostrar los 3 CSVs rapidamente
+- Ejecutar la carga
+- Mostrar las tablas: ventas (4,700), productos (20), sucursales (5)
 
 ### Narrar:
-> "Fijense: 3 lineas de codigo y ya tenemos casi 5,000 registros listos.
-> En Excel esto seria facil, pero imaginen con 50 millones de registros.
+> "3 lineas de codigo y ya tenemos casi 5,000 registros listos para analizar.
+> En Excel esto seria facil, pero imaginen con 50 millones de registros...
 > Ahi es donde Databricks brilla."
-
-### Mostrar las vistas temporales SQL:
-> "Ahora podemos hablarle a estos datos en SQL, que es como el idioma universal de los datos."
 
 ---
 
-## BLOQUE 3: "Dona Marta quiere el panorama general" (25 min)
+## BLOQUE 3: "El panorama general" (25 min)
 
 ### Dona Marta dice:
-> "Dame el panorama. Cuantas ventas tenemos? Cuando vendemos mas? Que se vende mas?"
+> "Dame el panorama. Cuantas ventas? Cuando vendemos mas? Que se vende mas?"
 
-### Ejecutar notebook 01_exploracion:
+### Ejecutar notebook 01_exploracion
 
-**Para cada analisis, seguir este patron:**
+**Patron para cada analisis:**
 1. Plantear la pregunta de Dona Marta
 2. Abrir el Databricks Assistant
-3. Escribir el prompt EN ESPANOL (que la audiencia lo vea)
+3. Escribir el prompt en espanol (que la audiencia lo vea)
 4. El Assistant genera el codigo
 5. Ejecutar y mostrar resultado
 6. Interpretar: "Esto le dice a Dona Marta que..."
 
-### Los prompts en vivo al Assistant:
-
-**Prompt 1:** "Muestrame las estadisticas descriptivas de las ventas"
-> Interpretar: "El ticket promedio es de $X, pero hay ventas desde $Y hasta $Z. Hay variabilidad."
-
-**Prompt 2:** "Cuantas ventas hay por mes? Ordena cronologicamente"
-> Interpretar: "Miren, en diciembre subio / en enero bajo. Tiene sentido por la temporada."
-
-**Prompt 3:** "Cual es el metodo de pago mas usado?"
-> Interpretar: "Nequi ya esta compitiendo con efectivo. Dona Marta deberia incentivar digital."
-
-**Prompt 4:** "A que hora del dia se vende mas?"
-> Interpretar: "Hay un pico a las X. Dona Marta deberia tener mas personal a esa hora."
-
-**Prompt 5:** "Top 5 productos mas vendidos haciendo join con la tabla de productos"
-> Interpretar: "El Espresso es rey. Pero vendemos mucho Croissant tambien. Combo perfecto."
+### Prompts al Assistant:
+- "Muestrame las estadisticas descriptivas de las ventas"
+- "Cuantas ventas hay por mes? Ordena cronologicamente"
+- "Cual es el metodo de pago mas usado?"
+- "A que hora del dia se vende mas?"
+- "Top 5 productos mas vendidos con join a la tabla de productos"
 
 ### Frase clave:
-> "Fijense que NO memorice la sintaxis de PySpark. Le pedi a la IA en espanol
-> y ella genero el codigo. Mi trabajo como analista es hacer las PREGUNTAS CORRECTAS
-> e INTERPRETAR los resultados. Eso no lo hace la IA por mi."
+> "No memorice la sintaxis de PySpark. Le pedi a la IA en espanol y ella
+> genero el codigo. Mi trabajo es hacer las PREGUNTAS CORRECTAS e
+> INTERPRETAR los resultados."
 
 ---
 
-## BLOQUE 4: "Dona Marta quiere respuestas de negocio" (25 min)
+## BLOQUE 4: "Respuestas para Dona Marta" (25 min)
 
 ### Dona Marta dice:
-> "Ok, ya vi los numeros generales. Ahora dime: cual sucursal me da mas plata?
-> Que producto es el mas rentable? Y el fin de semana vendemos mas o menos?"
+> "Cual sucursal me da mas plata? Que producto es el mas rentable?
+> El fin de semana vendemos mas o menos?"
 
 ### Ejecutar notebook 02_transformaciones:
 
 **Analisis 1: Sucursal mas rentable**
-- Ejecutar la consulta
-- Hacer notar: "La que mas vende NO siempre es la mas rentable. Miren el ticket promedio."
-- Comparar premium vs estandar
-> "Dona Marta, la sucursal del Centro vende mas, pero Poblado tiene mejor ticket promedio. Si quiere abrir otra, deberia ser formato premium."
+> "La que mas vende NO siempre es la mas rentable. Miren el ticket promedio.
+> Dona Marta, si quiere abrir otra sucursal, deberia ser formato premium."
 
 **Analisis 2: Categorias por margen**
-- Ejecutar el analisis
-- Hacer notar el margen de cada categoria
-> "Las bebidas calientes tienen 70% de margen. La comida tiene 60%. Dona Marta, su negocio es el CAFE, no la comida."
+> "Las bebidas calientes tienen 70% de margen. La comida tiene 60%.
+> Dona Marta, su negocio es el CAFE, no la comida."
 
 **Analisis 3: Semana vs fin de semana**
-- Ejecutar la comparacion
-> "Entre semana se vende mas volumen. Pero el fin de semana el ticket es mas alto. La gente se consiente mas el sabado."
+> "Entre semana se vende mas volumen. Fin de semana, el ticket es mas alto."
 
 **Analisis 4: Top productos por ganancia**
-- Ejecutar el ranking
-> "Ojo: el Cappuccino no es el mas vendido, pero es el que mas ganancia genera por unidad. Dona Marta deberia promocionarlo mas."
+> "El Cappuccino no es el mas vendido, pero genera mas ganancia por unidad."
 
-### Momento IA impro:
-Abrir una celda nueva y preguntarle al Assistant algo no planeado:
+### Momento impro con el Assistant:
+Abrir celda nueva, preguntar algo no planeado:
 > "Cual sucursal tiene la mayor caida de ventas en los ultimos 3 meses?"
 
-Mostrar que la IA resuelve preguntas al vuelo.
-
 ---
 
-## BLOQUE 5: "El reporte para Dona Marta" (20 min)
+## BLOQUE 5: "El dashboard para Dona Marta" - PRIMER WOW (20 min)
 
 ### Dona Marta dice:
-> "Todo eso esta muy lindo en codigo, pero yo necesito GRAFICOS. Algo que pueda
-> mostrarle a los inversionistas."
+> "Todo eso esta muy lindo en codigo, pero yo necesito GRAFICOS.
+> Algo que pueda mostrarle a los inversionistas."
 
-### Ejecutar notebook 03_visualizacion:
+### Cambiar a la tab del SQL Dashboard:
+- Mostrar el dashboard ya construido (lo preparaste antes)
+- Recorrer cada grafico explicando que muestra
+- Mostrar los filtros interactivos
 
-Ir ejecutando los graficos uno a uno. Para cada uno:
-1. Ejecutar la celda SQL
-2. Click en el icono de grafico
-3. Seleccionar el tipo de visualizacion
-4. Narrar lo que el grafico revela
+### Narrar:
+> "Esto es un SQL Dashboard de Databricks. Tiene su propia URL.
+> Dona Marta puede abrirlo desde su celular, sin instalar nada, sin correr codigo.
+> Se actualiza automaticamente cuando llegan datos nuevos."
 
-**Graficos clave y que decir:**
+### Mostrar la URL compartible:
+- Click en Share
+- Mostrar que genera un link
+> "Esto es lo que Dona Marta recibe: un link. Asi de simple."
 
-1. **Tendencia mensual (lineas):** "Estamos creciendo? Miren la tendencia..."
-2. **Ranking sucursales (barras):** "Quien va ganando la carrera?"
-3. **Categorias (pastel/dona):** "De donde viene el dinero de Cafe Origen?"
-4. **Mapa de calor (heatmap):** "ESTE es mi favorito. Muestra exactamente CUANDO vender. Miren el lunes a las 11am vs el sabado a las 3pm."
-5. **Top productos (barras):** "Estos son los jugadores estrella."
-6. **Metodos de pago:** "El efectivo esta muriendo? Los datos dicen que..."
-7. **KPIs finales:** "Si Dona Marta tiene 30 segundos, esto es lo que ve."
-
-### Frase de transicion:
-> "Muy bien, ya tenemos todo el analisis en Databricks. Pero Dona Marta no va a abrir
-> Databricks. Ella quiere un LINK. Algo bonito que pueda abrir en su celular.
-> Y aqui viene la cereza del pastel..."
+### Mostrar como se crea (rapido):
+- Abrir un widget
+- Mostrar la consulta SQL detras
+- Mostrar como se cambia el tipo de grafico
+> "Cada grafico es una consulta SQL. Las mismas que escribimos antes."
 
 ---
 
-## BLOQUE 6: "El dashboard desplegado" - CIERRE WOW (15 min)
+## BLOQUE 6: "Genie: la IA responde" - CIERRE WOW (15 min)
 
 ### Que decir:
-> "Les presento el dashboard de Cafe Origen. Esto esta DESPLEGADO en internet.
-> Cualquiera con el link puede verlo. No necesita cuenta, no necesita instalar nada."
+> "Pero que tal si Dona Marta no quiere un dashboard fijo?
+> Que tal si ella quiere PREGUNTAR lo que se le ocurra?
+> Para eso existe Genie."
 
-### Abrir el dashboard de Streamlit en el navegador:
-- Mostrar la URL publica
-- Recorrer cada seccion del dashboard
-- Jugar con los filtros (cambiar sucursal, categoria, fechas)
-- Mostrar como los KPIs se actualizan en tiempo real
+### Cambiar a la tab de Genie:
 
-### Explicar (rapido, sin entrar en detalle de codigo):
-> "Esto lo hice con Streamlit, que es una herramienta de Python para crear dashboards.
-> Se despliega gratis en Streamlit Cloud. El codigo tiene menos de 300 lineas.
-> Y los datos son los MISMOS que analizamos en Databricks."
+### Preguntas en vivo (escribirlas una a una):
+1. "Cual es la sucursal con mas ventas?"
+2. "Que producto tiene el mejor margen de ganancia?"
+3. "Como se comparan las ventas de diciembre vs enero?"
+4. "A que hora se vende mas cafe?"
+5. "Muéstrame las ventas del ultimo mes por sucursal"
 
-### Mostrar el flujo completo:
-> "Entonces el proceso profesional real es:
-> 1. Los datos llegan (CSVs, bases de datos, APIs)
-> 2. Los analizas en Databricks con ayuda de IA
-> 3. Construyes un dashboard para que el negocio lo vea
-> 4. Lo despliegas para que cualquiera acceda con un link
->
-> Y eso es EXACTAMENTE lo que hicimos hoy en menos de 2 horas."
+### Para cada pregunta:
+- Escribir en lenguaje natural
+- Genie genera la consulta SQL y el resultado
+- Mostrar que genera graficos automaticamente
+- Interpretar el resultado
+
+### Momento interactivo (UNICO momento de participacion):
+> "Alguien quiere hacerle una pregunta a Genie sobre Cafe Origen?"
+
+Tomar 2-3 preguntas del publico y escribirlas en Genie en vivo.
+
+### Frase de cierre de Genie:
+> "Fijense lo que acaba de pasar: una persona SIN conocimiento tecnico
+> le hizo una pregunta en espanol a una IA, y la IA fue a la base de datos,
+> genero la consulta, ejecuto el analisis y devolvio la respuesta.
+> ESTO es el futuro del analisis de datos."
 
 ---
 
 ## BLOQUE 7: Conclusiones (10 min)
 
 ### Resumen:
-> "Hoy aprendimos 4 cosas:"
-1. **Databricks** para analizar datos a escala, gratis
-2. **IA (Assistant)** para generar codigo sin memorizarse nada
-3. **Hacer las preguntas correctas** es mas importante que saber la sintaxis
-4. **Desplegar resultados** para que el negocio los use
+> "Hoy Dona Marta recibio:"
+1. **Exploracion de datos** con Databricks Assistant (la IA escribe el codigo)
+2. **Analisis de negocio** que responde preguntas reales
+3. **Un dashboard profesional** con URL compartible
+4. **Genie** para hacer preguntas sin codigo
 
 ### Mensaje final:
 > "La IA no reemplaza al analista de datos. La IA genera el codigo, pero USTEDES
@@ -229,17 +216,27 @@ Ir ejecutando los graficos uno a uno. Para cada uno:
 > Esa persona pueden ser ustedes."
 
 ### Compartir:
-- Link al repo de GitHub con todo el material
-- Link al dashboard de Streamlit
-- "Todo esto es gratis. Pueden replicarlo esta misma noche."
+- Link al repositorio de GitHub con todo el material
+- Link al dashboard (si aun esta activo)
+- "Todo el codigo esta en GitHub. Pueden replicarlo."
 
 ---
 
-## Tips de presentacion
+## Plan B: Si algo falla
 
-- **NO correr.** Es mejor cubrir menos y que entiendan bien
-- **Narrar todo.** No ejecutar codigo en silencio. Siempre explicar que hace y por que
-- **Errores son normales.** Si algo falla, mostrar como el Assistant ayuda a debuggear
-- **Backup:** Tener screenshots de cada resultado por si el cluster se cae
-- **Internet:** Verificar conexion estable. Todo es cloud
-- **Agua.** Son 2 horas hablando. Llevar agua
+| Problema | Solucion |
+|----------|---------|
+| Cluster no enciende | Tener screenshots de cada resultado |
+| SQL Warehouse lento | Ya tener el dashboard cargado, no hacer refresh |
+| Genie no responde bien | Tener preguntas pre-probadas que sabes que funcionan |
+| Internet se cae | Tener los notebooks exportados como HTML en local |
+| Trial expiro | Volver a Community Edition + Streamlit (carpeta streamlit-app) |
+
+---
+
+## Tips
+- **NO correr.** Mejor cubrir menos y que entiendan
+- **Narrar todo.** No ejecutar codigo en silencio
+- **Errores son normales.** Mostrar como el Assistant ayuda a debuggear
+- **Agua.** Son 2 horas hablando
+- **Apagar recursos al terminar.** SQL Warehouse + cluster = consume creditos
