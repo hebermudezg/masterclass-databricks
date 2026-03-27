@@ -3,6 +3,10 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 from datetime import datetime
+from pathlib import Path
+
+# Ruta base relativa al script (funciona en local y en Streamlit Cloud)
+BASE_DIR = Path(__file__).parent
 
 # ─────────────────────────────────────────────
 # CONFIG
@@ -19,9 +23,9 @@ st.set_page_config(
 # ─────────────────────────────────────────────
 @st.cache_data
 def cargar_datos():
-    ventas = pd.read_csv("data/ventas.csv", parse_dates=["fecha"])
-    productos = pd.read_csv("data/productos.csv")
-    sucursales = pd.read_csv("data/sucursales.csv")
+    ventas = pd.read_csv(BASE_DIR / "data/ventas.csv", parse_dates=["fecha"])
+    productos = pd.read_csv(BASE_DIR / "data/productos.csv")
+    sucursales = pd.read_csv(BASE_DIR / "data/sucursales.csv")
 
     df = ventas.merge(productos, on="producto_id").merge(sucursales, on="sucursal_id", suffixes=("_prod", "_suc"))
     df["mes"] = df["fecha"].dt.to_period("M").astype(str)
