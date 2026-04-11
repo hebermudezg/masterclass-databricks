@@ -21,23 +21,28 @@ df.head()
 # MAGIC ## Prompt 1: Regresion Lineal
 # MAGIC
 # MAGIC Empezamos con el modelo mas simple e interpretable.
-# MAGIC Los coeficientes nos dicen cuantos puntos sube o baja
-# MAGIC cada variable.
+# MAGIC Los coeficientes nos dicen cuantos puntos sube o baja cada variable.
 # MAGIC
-# MAGIC > Del dataframe `df`, codifica como numeros estas columnas:
-# MAGIC > - `fami_estratovivienda`: mapear con {"Sin Estrato":0, "Estrato 1":1, "Estrato 2":2, "Estrato 3":3, "Estrato 4":4, "Estrato 5":5, "Estrato 6":6}
-# MAGIC > - `fami_educacionmadre` y `fami_educacionpadre`: mapear con {"Ninguno":0, "Primaria incompleta":1, "Primaria completa":2, "Secundaria (Bachillerato) incompleta":3, "Secundaria (Bachillerato) completa":4, "Técnica o tecnológica incompleta":5, "Técnica o tecnológica completa":6, "Educación profesional incompleta":7, "Educación profesional completa":8, "Postgrado":9}
-# MAGIC > - `cole_naturaleza`: 1 si es "OFICIAL", 0 si no
-# MAGIC > - `cole_area_ubicacion`: 1 si es "RURAL", 0 si no
-# MAGIC > - `cole_bilingue`: 1 si es "S", 0 si no
-# MAGIC > - `estu_genero`: 1 si es "M", 0 si no
-# MAGIC > - `fami_tieneinternet`, `fami_tienecomputador`, `fami_tieneautomovil`, `fami_tienelavadora`: 1 si es "Si", 0 si no
+# MAGIC > Del dataframe `df`, necesito predecir `punt_global` con una Regresion Lineal.
 # MAGIC >
-# MAGIC > Aplica `.fillna(0)` despues de cada mapeo para evitar NaN.
+# MAGIC > Primero imprime los valores unicos de `fami_estratovivienda`,
+# MAGIC > `fami_educacionmadre` y `fami_educacionpadre` para ver que contienen.
+# MAGIC >
+# MAGIC > Luego codifica todas las columnas categoricas como numeros:
+# MAGIC > - `fami_estratovivienda`: ordinal donde Estrato 1=1 hasta Estrato 6=6,
+# MAGIC >   usa los valores exactos que viste en el unique()
+# MAGIC > - `fami_educacionmadre` y `fami_educacionpadre`: ordinal de menor a mayor
+# MAGIC >   nivel educativo, usa los valores exactos que viste en el unique()
+# MAGIC > - Las columnas binarias (`cole_naturaleza`, `cole_area_ubicacion`,
+# MAGIC >   `cole_bilingue`, `estu_genero`, `fami_tieneinternet`,
+# MAGIC >   `fami_tienecomputador`, `fami_tieneautomovil`, `fami_tienelavadora`):
+# MAGIC >   convierte a 1/0
+# MAGIC >
+# MAGIC > Aplica fillna(0) para evitar errores.
 # MAGIC > Divide 80/20 con random_state=42.
-# MAGIC > Entrena una **Regresion Lineal** para predecir `punt_global`.
-# MAGIC > Muestra el MAE, R2, y una grafica de barras horizontales con
-# MAGIC > los coeficientes del modelo (cuantos puntos aporta cada variable).
+# MAGIC > Entrena la Regresion Lineal, muestra MAE y R2.
+# MAGIC > Grafica barras horizontales con los coeficientes (cuantos puntos
+# MAGIC > aporta cada variable).
 
 # COMMAND ----------
 
