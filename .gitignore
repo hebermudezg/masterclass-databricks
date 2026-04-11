@@ -1,5 +1,4 @@
-# Script privado del presentador
-presentacion/script_presentador.md
+presentacion/*.md
 
 # Datos (excepto el dataset del proyecto)
 *.xlsx
