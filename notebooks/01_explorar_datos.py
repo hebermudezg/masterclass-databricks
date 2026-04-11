@@ -46,3 +46,32 @@ print("Tabla Delta creada: default.icfes_saber11")
 # MAGIC        MIN(punt_global) as minimo,
 # MAGIC        MAX(punt_global) as maximo
 # MAGIC FROM default.icfes_saber11
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC ## 3. Explorar con Genie
+# MAGIC
+# MAGIC **Genie** es el asistente de IA de Databricks. Permite hacer preguntas
+# MAGIC sobre los datos en lenguaje natural, sin escribir codigo.
+# MAGIC
+# MAGIC **Como funciona:**
+# MAGIC 1. Le escribes una pregunta en espanol (como si hablaras con un colega)
+# MAGIC 2. Genie genera el SQL necesario automaticamente
+# MAGIC 3. Ejecuta la consulta contra la tabla Delta
+# MAGIC 4. Muestra el resultado con visualizacion incluida
+# MAGIC
+# MAGIC Genie conoce la estructura de la tabla: sabe que columnas existen,
+# MAGIC que tipo de datos tiene cada una y que valores son posibles.
+# MAGIC No hay que explicarle el esquema, el lo descubre solo.
+# MAGIC
+# MAGIC **Para usarlo:** Menu lateral > **Genie** > seleccionar `default.icfes_saber11`
+# MAGIC
+# MAGIC **Preguntas de ejemplo:**
+# MAGIC - Cuantos estudiantes hay por estrato?
+# MAGIC - Cual es el puntaje promedio por estrato socioeconomico?
+# MAGIC - Hay diferencia entre colegios oficiales y privados?
+# MAGIC - Los estudiantes con internet tienen mejor puntaje?
+# MAGIC - Como afecta la educacion de la madre al puntaje?
+# MAGIC - Cuales son los 10 mejores departamentos?
+# MAGIC - Que porcentaje de estrato 1 supera los 300 puntos?
