@@ -51,37 +51,19 @@ tipo de colegio, y si tienes internet."
 
 ---
 
-### Bloque 2: Cargar datos + tabla Delta - Notebook 01 (8 min)
+### Bloque 2: Cargar datos + tabla Delta - Notebook 01 (5 min)
 
-**Celda: Cargar datos (2 min)**
-- "Descargamos resultados del ICFES directamente de datos.gov.co, el portal de datos abiertos del gobierno"
-- Ejecutar, mostrar el resultado
+**Celda: Cargar datos (1 min)**
+- Ejecutar. "Son datos reales del ICFES, 27,000 estudiantes"
 
-**Celda: Vista rapida (1 min)**
-- Mostrar las primeras filas
-- "Miren: estrato, tipo de colegio, educacion de los padres, internet, y los puntajes"
+**Celda: Ver los datos (1 min)**
+- "Miren las columnas: estrato, tipo de colegio, educacion de los padres, internet, puntajes"
 
-**Celda: Limpieza (1 min)**
-- "Quitamos duplicados y convertimos puntajes a numeros"
-- No detenerse mucho aqui, es preparacion
+**Celda: Guardar como tabla Delta (2 min)**
+- Explicar brevemente que es Delta Lake: formato nativo de Databricks, permite que Genie y SQL accedan a los datos
+- Ejecutar
 
-**Celda: Guardar como tabla Delta (2 min) - EXPLICAR**
-
-"Ahora viene algo importante. Vamos a guardar estos datos como una
-**tabla Delta**. Que es eso?"
-
-"Delta Lake es el formato nativo de Databricks. Piensen en ello como
-una tabla de base de datos super inteligente:
-- Esta optimizada para consultas rapidas
-- Tiene versionado automatico
-- Y lo mas importante: al guardarla como tabla Delta, la IA de
-  Databricks puede acceder a ella. Genie necesita una tabla Delta
-  para poder responder preguntas."
-
-Ejecutar la celda.
-
-**Celda SQL: Verificacion (1 min)**
-- "Verificamos: X estudiantes, puntaje promedio de X"
+**Celda SQL: Verificar (1 min)**
 - "Listo, la tabla esta creada. Ahora viene lo bueno."
 
 ---
@@ -153,25 +135,7 @@ analitica de datos asistida por IA."
 
 ---
 
-### Bloque 4: Visualizaciones Python - Notebook 01 (7 min)
-
-**Transicion:**
-"Genie es espectacular para explorar rapido. Pero cuando necesitas
-graficas pulidas para un informe o una presentacion, usamos Python."
-
-Volver al Notebook 01, ir al Paso 5.
-
-**Ejecutar las graficas una por una (rapido):**
-- Distribucion del puntaje (2 min): "La tipica campana, con el promedio aqui"
-- Puntaje por estrato (1 min): "Lo que Genie nos mostro, pero ahora publicable"
-- 4 paneles (2 min): "Oficial vs privado, urbano vs rural, internet, genero - todo en una imagen"
-- Educacion de la madre (2 min): "Este es poderoso: de 'Ninguno' a 'Postgrado'"
-
-No detenerse mucho, el impacto ya lo hizo Genie.
-
----
-
-### Bloque 5: Modelo de ML - Notebook 02 (20 min)
+### Bloque 4: Modelo de ML - Notebook 02 (25 min)
 
 **Transicion (2 min):**
 "Ahora la pregunta real: puede un modelo PREDECIR el puntaje?
