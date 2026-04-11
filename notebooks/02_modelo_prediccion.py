@@ -25,30 +25,31 @@ df.head()
 # MAGIC
 # MAGIC ---
 # MAGIC
-# MAGIC > I have a dataframe called `df` with Colombian ICFES exam results.
-# MAGIC > Train a **Random Forest** model to predict the column `punt_global`
-# MAGIC > using these socioeconomic features:
+# MAGIC > Tengo un dataframe llamado `df` con resultados del examen ICFES Saber 11
+# MAGIC > de Colombia. Entrena un modelo **Random Forest** para predecir la columna
+# MAGIC > `punt_global` usando estas variables socioeconomicas:
 # MAGIC > `fami_estratovivienda`, `fami_educacionmadre`, `fami_educacionpadre`,
 # MAGIC > `cole_naturaleza`, `cole_area_ubicacion`, `cole_bilingue`,
 # MAGIC > `estu_genero`, `fami_tieneinternet`, `fami_tienecomputador`,
 # MAGIC > `fami_tieneautomovil`, `fami_tienelavadora`.
 # MAGIC >
-# MAGIC > Steps:
-# MAGIC > 1. Encode categorical columns as numeric (ordinal for estrato 1-6
-# MAGIC >    and education levels, binary for yes/no columns)
-# MAGIC > 2. Split 80/20 train/test with random_state=42
-# MAGIC > 3. Train a RandomForestRegressor with 200 estimators
-# MAGIC > 4. Print MAE and R2 score
-# MAGIC > 5. Plot a horizontal bar chart of feature importances
-# MAGIC > 6. Predict for two contrasting students:
-# MAGIC >    - Student A: Estrato 1, public rural school, mother primary education, no internet
-# MAGIC >    - Student B: Estrato 5, private bilingual school, mother postgraduate, with internet
-# MAGIC > 7. Show the difference in predicted scores
+# MAGIC > Pasos:
+# MAGIC > 1. Codifica las columnas categoricas como numeros (ordinal para estrato 1-6
+# MAGIC >    y niveles de educacion, binario para columnas Si/No)
+# MAGIC > 2. Divide 80/20 train/test con random_state=42
+# MAGIC > 3. Entrena un RandomForestRegressor con 200 estimators
+# MAGIC > 4. Imprime el MAE y el R2 score
+# MAGIC > 5. Grafica un bar chart horizontal con la importancia de cada variable
+# MAGIC > 6. Predice para dos estudiantes contrastantes:
+# MAGIC >    - Estudiante A: Estrato 1, colegio oficial rural, mama con primaria, sin internet
+# MAGIC >    - Estudiante B: Estrato 5, colegio privado bilingue, mama con postgrado, con internet
+# MAGIC > 7. Muestra la diferencia en puntaje predicho
+# MAGIC > 8. Registra el modelo en MLflow con `mlflow.set_registry_uri("databricks-uc")`
+# MAGIC >    y `mlflow.register_model()` con el nombre `main.default.prediccion_icfes_saber11`
 # MAGIC
 # MAGIC ---
 # MAGIC
-# MAGIC *Tip: el Assistant funciona mejor con prompts en ingles.
-# MAGIC Si el codigo se corta, escribir "continue" en la siguiente celda.
+# MAGIC *Si el codigo se corta, escribir "continue" en la siguiente celda.
 # MAGIC Si da error, seleccionar el error y pedir "fix this".*
 
 # COMMAND ----------
