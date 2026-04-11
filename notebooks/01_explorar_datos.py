@@ -29,8 +29,8 @@ import numpy as np
 URL_DATOS = (
     "https://www.datos.gov.co/resource/kgxf-xxbe.csv"
     "?$limit=50000"
-    "&$where=punt_global IS NOT NULL AND periodo >= '20201'"
-    "&$order=periodo DESC"
+    "&$where=punt_global%20IS%20NOT%20NULL%20AND%20periodo%20%3E%3D%20%2720201%27"
+    "&$order=periodo%20DESC"
 )
 
 # Alternativa: cargar desde Volume (mas rapido si pre-subiste el CSV)
