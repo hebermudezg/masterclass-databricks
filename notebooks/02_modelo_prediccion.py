@@ -2,84 +2,54 @@
 # MAGIC %md
 # MAGIC # Modelo de Prediccion: Puntaje ICFES
 # MAGIC
-# MAGIC Vamos a entrenar un modelo que prediga el puntaje del ICFES
-# MAGIC usando **solo variables socioeconomicas**.
-# MAGIC
-# MAGIC Ninguna variable academica. Solo contexto.
+# MAGIC Vamos a pedirle al asistente de IA de Databricks que nos
+# MAGIC entrene un modelo de machine learning para predecir el
+# MAGIC puntaje del ICFES usando solo variables socioeconomicas.
+
+# COMMAND ----------
+
+import pandas as pd
+
+df = spark.table("default.icfes_saber11").toPandas()
+print(f"{df.shape[0]:,} estudiantes")
+df.head()
 
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC ## Paso 1
-# MAGIC Carga los datos de la tabla Delta `default.icfes_saber11` como DataFrame de pandas.
-
-# COMMAND ----------
-
-
-
-# COMMAND ----------
-
-# MAGIC %md
-# MAGIC ## Paso 2
-# MAGIC Necesitamos convertir las variables categoricas a numeros para que el modelo pueda procesarlas:
+# MAGIC ## Entrenar el modelo con ayuda de la IA
 # MAGIC
-# MAGIC - `fami_estratovivienda` → numero del 1 al 6
-# MAGIC - `fami_educacionmadre` y `fami_educacionpadre` → escala del 0 (ninguno) al 9 (postgrado)
-# MAGIC - `cole_naturaleza`, `cole_area_ubicacion`, `cole_bilingue`, `estu_genero`, `fami_tieneinternet`, `fami_tienecomputador`, `fami_tieneautomovil`, `fami_tienelavadora` → 1 o 0
-
-# COMMAND ----------
-
-
-
-# COMMAND ----------
-
-# MAGIC %md
-# MAGIC ## Paso 3
-# MAGIC Entrena un modelo **Random Forest** para predecir `punt_global`
-# MAGIC usando las variables socioeconomicas que acabamos de crear.
+# MAGIC Ahora le pedimos al **Databricks Assistant** que nos escriba todo
+# MAGIC el codigo de machine learning. Hacemos click en la celda de abajo,
+# MAGIC abrimos el Assistant, y le damos este prompt:
 # MAGIC
-# MAGIC Divide los datos en 80% entrenamiento y 20% prueba.
-# MAGIC Usa `mlflow.autolog()` para registrar el experimento automaticamente.
-
-# COMMAND ----------
-
-
-
-# COMMAND ----------
-
-# MAGIC %md
-# MAGIC ## Paso 4
-# MAGIC Evalua el modelo: muestra el error promedio (MAE)
-# MAGIC y que porcentaje de la variacion explica (R2).
-
-# COMMAND ----------
-
-
-
-# COMMAND ----------
-
-# MAGIC %md
-# MAGIC ## Paso 5
-# MAGIC Crea una grafica de barras horizontales mostrando la
-# MAGIC **importancia de cada variable** en la prediccion.
+# MAGIC ---
 # MAGIC
-# MAGIC Esto nos dice: que factores pesan mas en el puntaje del ICFES?
-
-# COMMAND ----------
-
-
-
-# COMMAND ----------
-
-# MAGIC %md
-# MAGIC ## Paso 6
-# MAGIC Predice el puntaje para dos perfiles contrastantes:
+# MAGIC > I have a dataframe called `df` with Colombian ICFES exam results.
+# MAGIC > Train a **Random Forest** model to predict the column `punt_global`
+# MAGIC > using these socioeconomic features:
+# MAGIC > `fami_estratovivienda`, `fami_educacionmadre`, `fami_educacionpadre`,
+# MAGIC > `cole_naturaleza`, `cole_area_ubicacion`, `cole_bilingue`,
+# MAGIC > `estu_genero`, `fami_tieneinternet`, `fami_tienecomputador`,
+# MAGIC > `fami_tieneautomovil`, `fami_tienelavadora`.
+# MAGIC >
+# MAGIC > Steps:
+# MAGIC > 1. Encode categorical columns as numeric (ordinal for estrato 1-6
+# MAGIC >    and education levels, binary for yes/no columns)
+# MAGIC > 2. Split 80/20 train/test with random_state=42
+# MAGIC > 3. Train a RandomForestRegressor with 200 estimators
+# MAGIC > 4. Print MAE and R2 score
+# MAGIC > 5. Plot a horizontal bar chart of feature importances
+# MAGIC > 6. Predict for two contrasting students:
+# MAGIC >    - Student A: Estrato 1, public rural school, mother primary education, no internet
+# MAGIC >    - Student B: Estrato 5, private bilingual school, mother postgraduate, with internet
+# MAGIC > 7. Show the difference in predicted scores
 # MAGIC
-# MAGIC **Perfil A:** Estrato 1, colegio oficial rural, mama con primaria, sin internet, sin computador
+# MAGIC ---
 # MAGIC
-# MAGIC **Perfil B:** Estrato 5, colegio privado bilingue, mama con postgrado, con internet y computador
-# MAGIC
-# MAGIC Muestra la diferencia en puntos.
+# MAGIC *Tip: el Assistant funciona mejor con prompts en ingles.
+# MAGIC Si el codigo se corta, escribir "continue" en la siguiente celda.
+# MAGIC Si da error, seleccionar el error y pedir "fix this".*
 
 # COMMAND ----------
 
