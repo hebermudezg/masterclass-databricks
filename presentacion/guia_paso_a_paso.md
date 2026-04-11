@@ -18,16 +18,15 @@
    - Los notebooks aparecen automaticamente en el Workspace
    - **NOTA:** La opcion "Import > URL" NO funciona con github.com en Free Edition.
      Usar siempre "Connect to a GitHub repo" o importar archivos manualmente.
-3. Ejecutar Notebook 01 completo (la descarga de datos toma ~1 minuto)
-4. Ejecutar Notebook 02 completo (el modelo entrena en ~30 segundos)
-5. Verificar que las graficas se generen correctamente
+3. Ejecutar Notebook 01 hasta el Paso 3 (guardar tabla Delta) para tener los datos listos
+4. Probar que Genie reconoce la tabla `default.icfes_saber11`
+5. Ejecutar Notebook 02 completo para verificar que el modelo entrena bien
 6. Tomar capturas de pantalla de cada resultado como plan B
 
 ### Si vas a hacer deploy (Notebook 03)
-- Necesitas Databricks Pay-As-You-Go
-- Activar cuenta paga al menos 1 dia antes
-- Ejecutar Notebook 03 para verificar que Model Serving funcione
-- El endpoint tarda ~5 minutos en estar listo
+- Necesitas Databricks Pay-As-You-Go (no funciona en Free Edition)
+- Activa la cuenta paga al menos 1 dia antes
+- Costo estimado: ~$2-5 USD por toda la demo
 
 ---
 
@@ -36,166 +35,207 @@
 ### Bloque 1: Introduccion (5 min)
 
 **Abrir con la pregunta:**
+
 "Levanten la mano los que presentaron el ICFES. Todos, verdad?
-Hoy vamos a hacer algo interesante: tomar 7 millones de resultados
-reales del Saber 11 y preguntarle a un modelo de IA si puede predecir
-tu puntaje ANTES de que presentes el examen. Solo con datos como tu
-estrato, si tu colegio es oficial o privado, y si tienes internet en casa."
+Hoy vamos a hacer algo provocador: tomar miles de resultados reales
+del Saber 11 y preguntarle a la IA si puede predecir tu puntaje
+ANTES de que presentes el examen. Solo con datos como tu estrato,
+tipo de colegio, y si tienes internet."
 
-**Que vamos a hacer:**
-1. Explorar los datos con visualizaciones y con Genie (la IA de Databricks)
-2. Entrenar un modelo de Machine Learning
-3. Ponerlo en produccion como una API
-
-"Todo esto en 1 hora, con datos reales, en una plataforma gratuita."
+**Lo que vamos a hacer:**
+1. Cargar datos reales y guardarlos en Databricks
+2. Explorar con Genie (la IA de Databricks) SIN escribir codigo
+3. Crear visualizaciones profesionales con Python
+4. Entrenar un modelo de Machine Learning
+5. Ponerlo en produccion como API
 
 ---
 
-### Bloque 2: Exploracion de datos - Notebook 01 (25 min)
+### Bloque 2: Cargar datos + tabla Delta - Notebook 01 (8 min)
 
 **Celda: Cargar datos (2 min)**
-- "Estamos descargando 50,000 resultados recientes directamente de datos.gov.co"
-- "El dataset completo tiene 7 millones, pero para la demo usamos una muestra"
-- Mostrar el resultado: filas x columnas
+- "Descargamos resultados del ICFES directamente de datos.gov.co, el portal de datos abiertos del gobierno"
+- Ejecutar, mostrar el resultado
 
-**Celda: Grupos de columnas (2 min)**
-- "Miren como se organizan: datos del colegio, del estudiante, de la familia, y los puntajes"
-- "Lo interesante son las variables de la familia: estrato, educacion de los padres, internet..."
+**Celda: Vista rapida (1 min)**
+- Mostrar las primeras filas
+- "Miren: estrato, tipo de colegio, educacion de los padres, internet, y los puntajes"
 
-**Celda: Limpieza (2 min)**
-- "Eliminamos duplicados y convertimos puntajes a numeros"
-- Comentar las estadisticas basicas
+**Celda: Limpieza (1 min)**
+- "Quitamos duplicados y convertimos puntajes a numeros"
+- No detenerse mucho aqui, es preparacion
 
-**Celda: Distribucion del puntaje (2 min)**
-- "Asi se distribuyen los puntajes. El promedio es de ~XXX puntos"
-- "Miren que es una campana bastante normal"
+**Celda: Guardar como tabla Delta (2 min) - EXPLICAR**
 
-**Celda: Puntaje por estrato - EL MOMENTO CLAVE (5 min)**
-- PAUSAR antes de ejecutar: "Antes de ver el resultado, ustedes que creen?
-  Cuanta diferencia habra entre estrato 1 y estrato 6?"
-- Ejecutar y dejar que la grafica hable
-- "Miren esos numeros. De estrato 1 a estrato 6 hay X puntos de diferencia"
-- "Eso es un dato, no una opinion"
+"Ahora viene algo importante. Vamos a guardar estos datos como una
+**tabla Delta**. Que es eso?"
 
-**Celda: 4 comparaciones (5 min)**
-- Ir grafica por grafica:
-- "Oficial vs privado: hay diferencia? Cuanta?"
-- "Urbano vs rural: ahi esta"
-- "Internet en casa: miren lo que cambia"
-- "Por genero: hay diferencia pero es menor que el estrato"
+"Delta Lake es el formato nativo de Databricks. Piensen en ello como
+una tabla de base de datos super inteligente:
+- Esta optimizada para consultas rapidas
+- Tiene versionado automatico
+- Y lo mas importante: al guardarla como tabla Delta, la IA de
+  Databricks puede acceder a ella. Genie necesita una tabla Delta
+  para poder responder preguntas."
 
-**Celda: Educacion de la madre (3 min)**
-- "Este es poderoso: la educacion de la mama impacta directamente"
-- "De 'Ninguno' a 'Postgrado' hay X puntos de diferencia"
-- "Esto no es solo un dato, es un argumento para politica publica"
+Ejecutar la celda.
 
-**Celda: Departamentos (2 min)**
-- "Busquen su departamento. Los rojos son los 5 mas bajos, los verdes los 5 mas altos"
-
-**Demo Genie (3-5 min)**
-- Abrir Genie en el panel lateral
-- "Ahora voy a preguntarle a la IA directamente"
-- Escribir: "Cual es el puntaje promedio por estrato y tipo de colegio?"
-- Mostrar como genera SQL y grafica automaticamente
-- PREGUNTAR A LA AUDIENCIA: "Que quieren preguntarle?" -> escribir lo que digan
-- Enfatizar: "Genie CONOCE tu tabla. Sabe que columnas tienes, los valores posibles..."
+**Celda SQL: Verificacion (1 min)**
+- "Verificamos: X estudiantes, puntaje promedio de X"
+- "Listo, la tabla esta creada. Ahora viene lo bueno."
 
 ---
 
-### Bloque 3: Modelo de ML - Notebook 02 (25 min)
+### Bloque 3: GENIE - Explorar SIN codigo (20 min) - PROTAGONISTA
 
-**Intro (2 min)**
-- "Ahora la pregunta real: puede un modelo PREDECIR el puntaje?"
-- "Le vamos a dar SOLO variables socioeconomicas. Nada de puntajes por materia."
-- "Estrato, educacion de los padres, tipo de colegio, internet, computador..."
-- "Si el modelo puede predecir con eso, que nos dice del sistema educativo?"
+**Transicion:**
+"Ahora voy a cerrar el notebook por un momento y vamos a abrir Genie.
+Genie es el asistente de IA de Databricks. Le voy a hacer preguntas
+sobre nuestros datos en espanol, en lenguaje natural, y el va a generar
+el SQL y las graficas por nosotros."
 
-**Celda: Feature engineering (3 min)**
-- "Convertimos texto a numeros: Estrato 1 = 1, Postgrado = 9, Si = 1, No = 0"
-- Mostrar la lista de 12 features
-- "12 variables. Ninguna es el puntaje de una materia. Solo contexto socioeconomico"
+**Como abrir Genie:**
+- Menu lateral izquierdo > **Genie** (bajo la seccion SQL)
+- Seleccionar la tabla `default.icfes_saber11`
 
-**Celda: Train/test split (1 min)**
-- "80% para que el modelo aprenda, 20% para evaluarlo con datos que nunca vio"
+**Secuencia de preguntas (seguir este orden, construye una narrativa):**
 
-**Celda: Entrenar con MLflow (5 min)**
-- "Random Forest: le preguntamos a 200 arboles de decision"
-- "MLflow registra TODO automaticamente"
-- Ejecutar y esperar resultado
-- INTERPRETAR las metricas en terminos simples:
-  - "MAE de X: el modelo se equivoca en promedio por X puntos"
-  - "R2 de 0.XX: solo con saber tu estrato y si tienes internet,
-     el modelo explica el XX% de la variacion en tu puntaje"
-- REFLEXION: "Piensen en eso. Sin saber NADA de tu capacidad academica,
-  solo con datos socioeconomicos, ya predice una parte significativa"
+**Calentamiento (3 min):**
+1. "Cuantos estudiantes hay en total?"
+   - Genie responde con SQL: `SELECT COUNT(*) FROM ...`
+   - "Miren: genero el SQL solito"
 
-**Celda: Feature importance (5 min) - SEGUNDO MOMENTO CLAVE**
-- "Que es lo que MAS importa segun el modelo?"
-- Ejecutar y analizar
-- "Miren: [variable X] es la mas importante"
-- Generar debate: "Esto les sorprende? Que les dice del sistema?"
+2. "Cual es el puntaje promedio?"
+   - Comentar el resultado
 
-**Celda: Prediccion vs Realidad (2 min)**
-- "Puntos cerca de la linea roja = buenas predicciones"
-- "No es perfecto, y eso es bueno: significa que HAY espacio para que
-   un estudiante supere su contexto socioeconomico"
+3. "Cuantos estudiantes hay por estrato?"
+   - "Vean la distribucion: la mayoria esta en estrato 1 y 2"
 
-**Celda: Registrar modelo (1 min)**
-- "Guardamos el modelo en MLflow para produccion"
+**El descubrimiento - momento clave (7 min):**
 
-**Celda: Prediccion en vivo (5 min) - MOMENTO INTERACTIVO**
-- Mostrar los dos perfiles contrastantes
-- "Perfil A: estrato 1, colegio rural, sin internet..."
-- "Perfil B: estrato 5, privado bilingue, con internet..."
-- Ejecutar y mostrar la diferencia
-- PREGUNTAR: "Alguien quiere probar con su propio perfil?"
-- Modificar valores en vivo segun lo que diga la audiencia
+4. **"Cual es el puntaje promedio por estrato socioeconomico?"**
+   - ANTES de ejecutar: "Ustedes que creen? Cuanta diferencia habra?"
+   - Ejecutar y PAUSAR. Dejar que la grafica hable.
+   - "De estrato 1 a estrato 6 hay X puntos de diferencia"
+   - "Eso no es opinion, son datos"
 
----
+5. "Hay diferencia entre colegios OFICIAL y NO OFICIAL?"
+   - Dejar reaccionar
 
-### Bloque 4: Deploy a produccion - Notebook 03 (10 min)
+6. "Los estudiantes con internet en casa tienen mejor puntaje?"
+   - "Internet cambia X puntos en promedio"
 
-**Intro (2 min)**
-- "Ahora el paso final: convertir este modelo en una API"
-- "Imaginense que la Secretaria de Educacion quiere identificar
-   estudiantes en riesgo ANTES del examen para enviar tutores"
-- "Este modelo podria ser la base de esa herramienta"
+7. "Como afecta la educacion de la madre al puntaje?"
+   - "Miren como sube el puntaje con cada nivel educativo de la mama"
 
-**Celda: Crear endpoint (3 min)**
-- Ejecutar (o mostrar pre-ejecutado)
-- "Databricks crea un servidor automaticamente"
-- "Scale-to-zero: si nadie lo usa, no pagas"
+**Profundizando (5 min):**
 
-**Celda: Probar endpoint (3 min)**
-- Ejecutar prediccion en vivo
-- "El modelo esta respondiendo como servicio web"
-- Mostrar el curl de ejemplo
+8. "Que porcentaje de estudiantes de Estrato 1 supera los 300 puntos?"
+   - Dato fuerte para la reflexion
 
-**Celda: Caso de uso (2 min)**
-- "Cualquier aplicacion puede llamar esta API"
-- "Una plataforma web, una app movil, un dashboard de Power BI"
+9. "Cuales son los 10 departamentos con mejor puntaje promedio?"
+   - "Busquen el suyo"
 
----
+10. "Cual es el puntaje promedio de ingles por estrato?"
+    - Otra dimension interesante
 
-### Bloque 5: Cierre (5 min)
+**Momento audiencia (5 min):**
 
-**Recapitular:**
-- "En 1 hora: datos abiertos del ICFES -> analisis -> modelo de IA -> API en produccion"
-- "Descubrimos patrones reales de desigualdad educativa"
-- "Y construimos una herramienta que podria ayudar a combatirla"
+11. Preguntar al publico: **"Que quieren saber de los datos?"**
+    - Escribir en Genie lo que digan
+    - Este es el momento mas interactivo y memorable
+    - Si nadie dice nada: "Que tal si miramos la diferencia entre jornada manana y noche?"
 
 **Reflexion:**
-- "Los datos no tienen opinion politica. Pero los patrones que revelan
-   deberian informar politicas publicas"
-- "La IA no reemplaza al analista: lo potencia"
+"Acabamos de analizar miles de resultados del ICFES sin escribir
+UNA sola linea de codigo. Genie genero todo el SQL. Eso es
+analitica de datos asistida por IA."
 
-**Recursos:**
+---
+
+### Bloque 4: Visualizaciones Python - Notebook 01 (7 min)
+
+**Transicion:**
+"Genie es espectacular para explorar rapido. Pero cuando necesitas
+graficas pulidas para un informe o una presentacion, usamos Python."
+
+Volver al Notebook 01, ir al Paso 5.
+
+**Ejecutar las graficas una por una (rapido):**
+- Distribucion del puntaje (2 min): "La tipica campana, con el promedio aqui"
+- Puntaje por estrato (1 min): "Lo que Genie nos mostro, pero ahora publicable"
+- 4 paneles (2 min): "Oficial vs privado, urbano vs rural, internet, genero - todo en una imagen"
+- Educacion de la madre (2 min): "Este es poderoso: de 'Ninguno' a 'Postgrado'"
+
+No detenerse mucho, el impacto ya lo hizo Genie.
+
+---
+
+### Bloque 5: Modelo de ML - Notebook 02 (20 min)
+
+**Transicion (2 min):**
+"Ahora la pregunta real: puede un modelo PREDECIR el puntaje?
+Le vamos a dar SOLO variables socioeconomicas. Nada de puntajes por materia.
+Estrato, educacion de los padres, tipo de colegio, internet...
+Si el modelo puede predecir con eso, que nos dice del sistema educativo?"
+
+**Celda: Feature engineering (3 min)**
+- "Convertimos texto a numeros: Estrato 1 = 1, Postgrado = 9"
+- "12 variables. Ninguna es academica. Solo contexto socioeconomico."
+
+**Celda: Train/test split (1 min)**
+- "80% para que aprenda, 20% para evaluarlo"
+
+**Celda: Entrenar con MLflow (5 min)**
+- Ejecutar y esperar
+- Interpretar:
+  - "MAE de X: se equivoca en promedio por X puntos"
+  - "R2: explica el X% de la variacion en tu puntaje"
+  - "Piensen: SIN saber nada de tu capacidad, solo con datos socioeconomicos..."
+
+**Celda: Feature importance (4 min) - SEGUNDO MOMENTO CLAVE**
+- "Que es lo que MAS importa segun el modelo?"
+- Generar debate
+
+**Celda: Prediccion en vivo (5 min) - MOMENTO INTERACTIVO**
+- Perfil A vs Perfil B: mostrar el contraste
+- "Alguien quiere probar con su propio perfil?"
+- Modificar valores en vivo
+
+---
+
+### Bloque 6: Deploy a produccion - Notebook 03 (5 min)
+
+*Si tienes cuenta paga, mostrar en vivo. Si no, mostrar capturas.*
+
+- "El modelo es ahora una API que cualquier app puede consultar"
+- "Una secretaria de educacion podria usar esto para identificar estudiantes en riesgo"
+- Mostrar el curl de ejemplo
+
+---
+
+### Bloque 7: Cierre (5 min)
+
+**Recapitular:**
+"En 1 hora hicimos todo el ciclo:
+1. Cargamos datos reales del ICFES
+2. Exploramos con Genie SIN codigo
+3. Creamos graficas profesionales con Python
+4. Entrenamos un modelo de IA
+5. Lo pusimos en produccion
+
+Y descubrimos que las condiciones socioeconomicas predicen una
+parte significativa del puntaje academico."
+
+**Reflexion:**
+"Los datos no tienen opinion politica. Pero los patrones que revelan
+deberian informar politicas publicas. La IA no reemplaza al analista: lo potencia."
+
+**Compartir:**
 - Databricks Free: https://www.databricks.com/try-databricks
 - Datos abiertos: https://www.datos.gov.co
 - Dataset ICFES: https://www.datos.gov.co/d/kgxf-xxbe
 - Este repo: https://github.com/hebermudezg/masterclass-databricks
-
-**Cerrar con preguntas**
 
 ---
 
@@ -204,15 +244,15 @@ estrato, si tu colegio es oficial o privado, y si tienes internet en casa."
 | Problema | Solucion |
 |---|---|
 | Descarga lenta de CSV | Reducir $limit a 20000 o usar Volume pre-cargado |
-| Duplicados en datos | drop_duplicates ya esta en el codigo |
-| Genie no responde | Recargar pagina, verificar que la tabla Delta existe |
-| Model Serving no disponible | Solo funciona en tier pago, mostrar capturas |
+| Genie no encuentra la tabla | Verificar que se ejecuto el Paso 3 (saveAsTable) |
+| Genie responde en ingles | Escribir las preguntas en espanol, suele responder en el mismo idioma |
+| Error MLflow | Verificar que tiene `mlflow.set_registry_uri("databricks-uc")` |
+| Model Serving falla | Solo funciona en tier pago, mostrar capturas |
 | Notebook lento | Reducir datos: cambiar $limit a 10000 |
-| Error de memoria | Reiniciar cluster o reducir datos |
 
 ## Codigos rapidos de referencia
 
 **Estrato:** 1-6 (Sin Estrato = 0)
-**Educacion padres:** Ninguno=0, Primaria inc.=1, Primaria comp.=2, Bachillerato inc.=3, Bachillerato comp.=4, Tecnica inc.=5, Tecnica comp.=6, Profesional inc.=7, Profesional comp.=8, Postgrado=9
+**Educacion padres:** Ninguno=0, Primaria inc.=1, Primaria comp.=2, Bach. inc.=3, Bach. comp.=4, Tecnica inc.=5, Tecnica comp.=6, Profesional inc.=7, Profesional comp.=8, Postgrado=9
 **Colegio:** Oficial=1, Privado=0 | Rural=1, Urbano=0 | Bilingue=1, No=0
 **Personas hogar:** 1a2=1, 3a4=2, 5a6=3, 7a8=4, 9+=5

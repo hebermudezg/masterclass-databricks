@@ -21,6 +21,9 @@ import mlflow.sklearn
 from mlflow.models.signature import infer_signature
 import matplotlib.pyplot as plt
 
+# Configurar MLflow para usar Unity Catalog (requerido en Free Edition)
+mlflow.set_registry_uri("databricks-uc")
+
 # COMMAND ----------
 
 # MAGIC %md
@@ -225,9 +228,11 @@ plt.show()
 
 # COMMAND ----------
 
+# En Free Edition usamos Unity Catalog para registrar el modelo
+# Formato: catalog.schema.nombre_modelo
 modelo_registrado = mlflow.register_model(
     f"runs:/{run_id}/modelo",
-    "prediccion_icfes_saber11"
+    "main.default.prediccion_icfes_saber11"
 )
 
 print(f"Modelo registrado: {modelo_registrado.name}")

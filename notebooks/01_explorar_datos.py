@@ -1,31 +1,33 @@
 # Databricks notebook source
 # MAGIC %md
-# MAGIC # Exploracion de Datos: ICFES Saber 11
+# MAGIC # ICFES Saber 11: Analitica Asistida por IA
 # MAGIC
-# MAGIC **Pregunta central:** Puede la IA predecir tu puntaje del ICFES solo con saber
-# MAGIC tu estrato, tipo de colegio y si tienes internet en casa?
+# MAGIC > **Puede la IA predecir tu puntaje del ICFES solo con saber
+# MAGIC > tu estrato, tipo de colegio y si tienes internet en casa?**
 # MAGIC
 # MAGIC **Dataset:** 7+ millones de resultados reales del Saber 11
 # MAGIC **Fuente:** [datos.gov.co](https://www.datos.gov.co/d/kgxf-xxbe)
 # MAGIC
-# MAGIC En este notebook:
-# MAGIC 1. Cargamos datos reales del ICFES
-# MAGIC 2. Limpiamos y preparamos
-# MAGIC 3. Exploramos que factores impactan el rendimiento academico
-# MAGIC 4. Guardamos datos limpios para el modelo de ML
+# MAGIC **Flujo de este notebook:**
+# MAGIC 1. Cargamos los datos y los preparamos
+# MAGIC 2. Los guardamos como **tabla Delta** (para que Genie pueda acceder)
+# MAGIC 3. Exploramos con **Genie** - la IA de Databricks genera SQL por nosotros
+# MAGIC 4. Creamos visualizaciones avanzadas con Python
 
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC ## 1. Cargar datos desde datos.gov.co
+# MAGIC ---
+# MAGIC ## Paso 1: Cargar datos del ICFES
+# MAGIC
+# MAGIC Descargamos resultados recientes directamente desde el portal
+# MAGIC de datos abiertos del gobierno colombiano.
 
 # COMMAND ----------
 
 import pandas as pd
 import numpy as np
 
-# Descargamos 50,000 resultados recientes (periodos 2020+) con puntaje valido
-# Para el dataset completo (7M filas), sube el CSV a un Volume y usa la linea comentada
 URL_DATOS = (
     "https://www.datos.gov.co/resource/kgxf-xxbe.csv"
     "?$limit=50000"
@@ -33,10 +35,10 @@ URL_DATOS = (
     "&$order=periodo%20DESC"
 )
 
-# Alternativa: cargar desde Volume (mas rapido si pre-subiste el CSV)
+# Alternativa: si pre-subiste el CSV a un Volume
 # URL_DATOS = "/Volumes/main/default/raw_data/icfes_saber11.csv"
 
-print("Descargando resultados del ICFES Saber 11...")
+print("Descargando resultados del ICFES Saber 11 desde datos.gov.co...")
 df = pd.read_csv(URL_DATOS)
 print(f"Dataset cargado: {df.shape[0]:,} filas x {df.shape[1]} columnas")
 
@@ -46,30 +48,19 @@ df.head()
 
 # COMMAND ----------
 
-# Las columnas se organizan en 4 grupos
-grupos = {
-    "Colegio (cole_)": [c for c in df.columns if c.startswith("cole_")],
-    "Estudiante (estu_)": [c for c in df.columns if c.startswith("estu_")],
-    "Familia (fami_)": [c for c in df.columns if c.startswith("fami_")],
-    "Puntajes (punt_/desemp_)": [c for c in df.columns if c.startswith("punt_") or c.startswith("desemp_")],
-}
-for grupo, cols in grupos.items():
-    print(f"\n{grupo}: {len(cols)} columnas")
-    for col in cols:
-        print(f"  - {col}")
-
-# COMMAND ----------
-
 # MAGIC %md
-# MAGIC ## 2. Limpieza de datos
+# MAGIC ---
+# MAGIC ## Paso 2: Limpieza rapida
+# MAGIC
+# MAGIC Tres cosas basicas: quitar duplicados, convertir puntajes a numeros,
+# MAGIC y filtrar registros validos.
 
 # COMMAND ----------
 
-# Eliminar duplicados (el dataset tiene filas repetidas)
+# Eliminar duplicados (hay filas repetidas en el dataset original)
 antes = len(df)
 df = df.drop_duplicates(subset=["estu_consecutivo"], keep="first")
-print(f"Duplicados eliminados: {antes - len(df):,} filas")
-print(f"Registros unicos: {len(df):,}")
+print(f"Duplicados eliminados: {antes - len(df):,}")
 
 # Convertir puntajes de texto a numerico
 cols_puntaje = ["punt_global", "punt_matematicas", "punt_lectura_critica",
@@ -77,25 +68,120 @@ cols_puntaje = ["punt_global", "punt_matematicas", "punt_lectura_critica",
 for col in cols_puntaje:
     df[col] = pd.to_numeric(df[col], errors="coerce")
 
-# Filtrar registros con puntaje valido
 df = df.dropna(subset=["punt_global"])
-
-print(f"\nEstadisticas del puntaje global:")
-print(f"  Promedio: {df['punt_global'].mean():.0f}")
-print(f"  Mediana:  {df['punt_global'].median():.0f}")
-print(f"  Min: {df['punt_global'].min():.0f} | Max: {df['punt_global'].max():.0f}")
-print(f"  Desv. estandar: {df['punt_global'].std():.0f}")
+print(f"Registros listos: {len(df):,}")
+print(f"Puntaje promedio: {df['punt_global'].mean():.0f} | Mediana: {df['punt_global'].median():.0f}")
 
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC ## 3. Visualizaciones
+# MAGIC ---
+# MAGIC ## Paso 3: Guardar como tabla Delta
 # MAGIC
-# MAGIC Vamos a responder visualmente:
-# MAGIC - Importa el estrato socioeconomico?
-# MAGIC - Colegio oficial vs privado: hay diferencia?
-# MAGIC - Tener internet en casa cambia algo?
-# MAGIC - Que tanto pesa la educacion de la mama?
+# MAGIC ### Que es una tabla Delta?
+# MAGIC
+# MAGIC **Delta Lake** es el formato nativo de almacenamiento de Databricks.
+# MAGIC Piensen en ello como una tabla de base de datos inteligente:
+# MAGIC
+# MAGIC - Se guarda en formato optimizado (Parquet + log de transacciones)
+# MAGIC - Permite consultas SQL rapidas sobre millones de filas
+# MAGIC - Tiene versionado automatico (puedes "viajar en el tiempo" a versiones anteriores)
+# MAGIC - Y lo mas importante para nosotros: **Genie puede consultarla con lenguaje natural**
+# MAGIC
+# MAGIC Al guardar nuestros datos como tabla Delta, desbloqueamos toda la
+# MAGIC inteligencia artificial de Databricks sobre ellos.
+
+# COMMAND ----------
+
+# Seleccionamos las columnas que nos interesan
+columnas = [
+    "periodo", "estu_genero",
+    "cole_area_ubicacion", "cole_bilingue", "cole_naturaleza",
+    "cole_jornada", "cole_caracter", "cole_depto_ubicacion",
+    "fami_estratovivienda", "fami_educacionmadre", "fami_educacionpadre",
+    "fami_personashogar", "fami_tieneautomovil", "fami_tienecomputador",
+    "fami_tieneinternet", "fami_tienelavadora",
+    "punt_global", "punt_matematicas", "punt_lectura_critica",
+    "punt_c_naturales", "punt_sociales_ciudadanas", "punt_ingles",
+]
+
+df_limpio = df[[c for c in columnas if c in df.columns]].copy()
+spark_df = spark.createDataFrame(df_limpio)
+spark_df.write.mode("overwrite").saveAsTable("default.icfes_saber11")
+print(f"Tabla Delta 'default.icfes_saber11' guardada: {len(df_limpio):,} filas")
+
+# COMMAND ----------
+
+# MAGIC %sql
+# MAGIC -- Verificamos que la tabla quedo bien
+# MAGIC SELECT COUNT(*) as total_estudiantes,
+# MAGIC        ROUND(AVG(punt_global), 0) as puntaje_promedio,
+# MAGIC        ROUND(MIN(punt_global), 0) as puntaje_minimo,
+# MAGIC        ROUND(MAX(punt_global), 0) as puntaje_maximo
+# MAGIC FROM default.icfes_saber11
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC ---
+# MAGIC ## Paso 4: Explorar con Genie (SIN escribir codigo)
+# MAGIC
+# MAGIC Ahora viene lo interesante. Vamos a abrir **Genie**, el asistente de IA
+# MAGIC de Databricks, y le vamos a hacer preguntas a los datos en lenguaje natural.
+# MAGIC
+# MAGIC **Como abrir Genie:**
+# MAGIC - En el menu lateral izquierdo, click en **"Genie"** (bajo la seccion SQL)
+# MAGIC - Selecciona la tabla `default.icfes_saber11`
+# MAGIC - Empieza a preguntar
+# MAGIC
+# MAGIC Genie genera SQL automaticamente. No necesitas saber SQL - solo preguntar.
+# MAGIC
+# MAGIC ---
+# MAGIC
+# MAGIC ### Preguntas sugeridas (seguir este orden para contar una historia)
+# MAGIC
+# MAGIC **Calentamiento - conocer los datos:**
+# MAGIC
+# MAGIC 1. `Cuantos estudiantes hay en total?`
+# MAGIC 2. `Cual es el puntaje global promedio?`
+# MAGIC 3. `Cuantos estudiantes hay por estrato?`
+# MAGIC
+# MAGIC **El descubrimiento principal - la desigualdad:**
+# MAGIC
+# MAGIC 4. `Cual es el puntaje promedio por estrato socioeconomico?`
+# MAGIC    *(Este es el momento clave. Dejar que la audiencia reaccione.)*
+# MAGIC
+# MAGIC 5. `Hay diferencia de puntaje entre colegios OFICIAL y NO OFICIAL?`
+# MAGIC 6. `Los estudiantes con internet en casa tienen mejor puntaje?`
+# MAGIC 7. `Como afecta la educacion de la madre al puntaje?`
+# MAGIC
+# MAGIC **Profundizando - preguntas mas especificas:**
+# MAGIC
+# MAGIC 8. `Que porcentaje de estudiantes de Estrato 1 supera los 300 puntos?`
+# MAGIC 9. `Cuales son los 10 departamentos con mejor puntaje promedio?`
+# MAGIC 10. `Cual es el puntaje promedio de ingles por estrato?`
+# MAGIC
+# MAGIC **Momento audiencia:**
+# MAGIC
+# MAGIC 11. Preguntar al publico: *"Que quieren saber de los datos?"*
+# MAGIC     Escribir en Genie lo que digan. Este es el momento mas interactivo.
+# MAGIC
+# MAGIC ---
+# MAGIC
+# MAGIC **Reflexion despues de Genie:**
+# MAGIC *"Acabamos de analizar datos de miles de estudiantes colombianos
+# MAGIC sin escribir una sola linea de codigo. Genie genero todo el SQL
+# MAGIC por nosotros. Eso es analitica asistida por IA."*
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC ---
+# MAGIC ## Paso 5: Visualizaciones avanzadas con Python
+# MAGIC
+# MAGIC Genie es excelente para explorar rapido. Pero para graficas
+# MAGIC pulidas, con control total sobre colores, formato y detalle,
+# MAGIC usamos Python. Veamos los mismos insights pero con nivel de publicacion.
 
 # COMMAND ----------
 
@@ -143,10 +229,10 @@ plt.show()
 
 # COMMAND ----------
 
-# --- Comparaciones clave: 4 paneles ---
+# --- 4 comparaciones clave en un solo panel ---
 fig, axes = plt.subplots(2, 2, figsize=(16, 12))
 
-# 1. Oficial vs No Oficial
+# Oficial vs Privado
 ax = axes[0, 0]
 tipo = df.groupby("cole_naturaleza")["punt_global"].mean().sort_values()
 tipo.plot(kind="barh", ax=ax, color=["#E53935", "#43A047"], edgecolor="white")
@@ -155,7 +241,7 @@ for i, (idx, val) in enumerate(tipo.items()):
 ax.set_title("Colegio Oficial vs Privado", fontsize=14, fontweight="bold")
 ax.set_xlabel("Puntaje Promedio")
 
-# 2. Urbano vs Rural
+# Urbano vs Rural
 ax = axes[0, 1]
 area = df.groupby("cole_area_ubicacion")["punt_global"].mean().sort_values()
 area.plot(kind="barh", ax=ax, color=["#FF8F00", "#1565C0"], edgecolor="white")
@@ -164,7 +250,7 @@ for i, (idx, val) in enumerate(area.items()):
 ax.set_title("Urbano vs Rural", fontsize=14, fontweight="bold")
 ax.set_xlabel("Puntaje Promedio")
 
-# 3. Internet Si vs No
+# Internet
 ax = axes[1, 0]
 internet = df.groupby("fami_tieneinternet")["punt_global"].mean().sort_values()
 internet.plot(kind="barh", ax=ax, color=["#E53935", "#43A047"], edgecolor="white")
@@ -173,7 +259,7 @@ for i, (idx, val) in enumerate(internet.items()):
 ax.set_title("Tiene Internet en Casa?", fontsize=14, fontweight="bold")
 ax.set_xlabel("Puntaje Promedio")
 
-# 4. Genero
+# Genero
 ax = axes[1, 1]
 genero = df.groupby("estu_genero")["punt_global"].mean().sort_values()
 genero_labels = genero.rename(index={"F": "Femenino", "M": "Masculino"})
@@ -213,7 +299,7 @@ plt.show()
 
 # COMMAND ----------
 
-# --- Top y Bottom 10 departamentos ---
+# --- Ranking de departamentos ---
 fig, ax = plt.subplots(figsize=(14, 8))
 depto = (
     df.groupby("cole_depto_ubicacion")["punt_global"]
@@ -221,9 +307,10 @@ depto = (
     .query("count >= 100")
     .sort_values("mean")
 )
-colores = ["#E53935"] * 5 + ["#9E9E9E"] * (len(depto) - 10) + ["#43A047"] * 5
-ax.barh(range(len(depto)), depto["mean"], color=colores, edgecolor="white")
-ax.set_yticks(range(len(depto)))
+n = len(depto)
+colores = ["#E53935"] * min(5, n) + ["#9E9E9E"] * max(0, n - 10) + ["#43A047"] * min(5, n)
+ax.barh(range(n), depto["mean"], color=colores[:n], edgecolor="white")
+ax.set_yticks(range(n))
 ax.set_yticklabels(depto.index, fontsize=10)
 ax.set_title("Puntaje Promedio por Departamento", fontsize=15, fontweight="bold")
 ax.set_xlabel("Puntaje Promedio")
@@ -232,68 +319,14 @@ plt.show()
 
 # COMMAND ----------
 
-# --- Puntajes por materia ---
-materias = {
-    "Matematicas": "punt_matematicas",
-    "Lectura Critica": "punt_lectura_critica",
-    "C. Naturales": "punt_c_naturales",
-    "Sociales": "punt_sociales_ciudadanas",
-    "Ingles": "punt_ingles",
-}
-fig, ax = plt.subplots(figsize=(10, 5))
-promedios = pd.Series({k: df[v].mean() for k, v in materias.items()}).sort_values()
-promedios.plot(kind="barh", ax=ax, color="#7B1FA2", edgecolor="white")
-for i, (idx, val) in enumerate(promedios.items()):
-    ax.text(val + 0.3, i, f"{val:.1f}", va="center", fontweight="bold")
-ax.set_title("Puntaje Promedio por Materia", fontsize=14, fontweight="bold")
-ax.set_xlabel("Puntaje Promedio")
-plt.tight_layout()
-plt.show()
-
-# COMMAND ----------
-
 # MAGIC %md
-# MAGIC ## 4. Guardar datos limpios como tabla Delta
-
-# COMMAND ----------
-
-# Columnas relevantes para el modelo
-columnas = [
-    "periodo", "estu_genero",
-    "cole_area_ubicacion", "cole_bilingue", "cole_naturaleza",
-    "cole_jornada", "cole_caracter", "cole_depto_ubicacion",
-    "fami_estratovivienda", "fami_educacionmadre", "fami_educacionpadre",
-    "fami_personashogar", "fami_tieneautomovil", "fami_tienecomputador",
-    "fami_tieneinternet", "fami_tienelavadora",
-    "punt_global", "punt_matematicas", "punt_lectura_critica",
-    "punt_c_naturales", "punt_sociales_ciudadanas", "punt_ingles",
-]
-
-df_limpio = df[[c for c in columnas if c in df.columns]].copy()
-spark_df = spark.createDataFrame(df_limpio)
-spark_df.write.mode("overwrite").saveAsTable("default.icfes_saber11")
-print(f"Tabla 'default.icfes_saber11' guardada: {len(df_limpio):,} filas")
-
-# COMMAND ----------
-
-# MAGIC %sql
-# MAGIC SELECT COUNT(*) as total,
-# MAGIC        ROUND(AVG(punt_global), 0) as promedio,
-# MAGIC        ROUND(MIN(punt_global), 0) as minimo,
-# MAGIC        ROUND(MAX(punt_global), 0) as maximo
-# MAGIC FROM default.icfes_saber11
-
-# COMMAND ----------
-
-# MAGIC %md
-# MAGIC ## Momento IA: Genie Code
+# MAGIC ---
+# MAGIC ## Resumen
 # MAGIC
-# MAGIC Abre **Genie** en el panel lateral y prueba estas preguntas:
+# MAGIC **Con Genie (sin codigo)** descubrimos los patrones principales:
+# MAGIC estrato, tipo de colegio, internet y educacion de los padres impactan el puntaje.
 # MAGIC
-# MAGIC - "Cual es el puntaje promedio por estrato?"
-# MAGIC - "Hay diferencia entre colegios oficiales y privados por departamento?"
-# MAGIC - "Que porcentaje de estudiantes de estrato 1 supera los 300 puntos?"
-# MAGIC - "Muestra el puntaje de matematicas vs lectura critica"
-# MAGIC - "Cuales son los mejores departamentos en ingles?"
+# MAGIC **Con Python** los presentamos de forma profesional y detallada.
 # MAGIC
-# MAGIC Genie conoce las columnas de tu tabla y genera SQL + graficas automaticamente.
+# MAGIC **Siguiente paso:** Notebook 02 - Entrenar un modelo de ML que prediga
+# MAGIC el puntaje usando solo estas variables socioeconomicas.

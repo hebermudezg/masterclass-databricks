@@ -20,8 +20,9 @@
 import mlflow
 from mlflow.tracking import MlflowClient
 
-client = MlflowClient()
-modelo_nombre = "prediccion_icfes_saber11"
+mlflow.set_registry_uri("databricks-uc")
+client = MlflowClient(registry_uri="databricks-uc")
+modelo_nombre = "main.default.prediccion_icfes_saber11"
 
 versiones = client.search_model_versions(f"name='{modelo_nombre}'")
 ultima = max(versiones, key=lambda v: int(v.version))
