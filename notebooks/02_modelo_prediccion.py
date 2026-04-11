@@ -6,126 +6,81 @@
 # MAGIC usando **solo variables socioeconomicas**.
 # MAGIC
 # MAGIC Ninguna variable academica. Solo contexto.
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC ## Paso 1
+# MAGIC Carga los datos de la tabla Delta `default.icfes_saber11` como DataFrame de pandas.
+
+# COMMAND ----------
+
+
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC ## Paso 2
+# MAGIC Necesitamos convertir las variables categoricas a numeros para que el modelo pueda procesarlas:
 # MAGIC
-# MAGIC Para cada paso, le pedimos al asistente de IA que nos ayude
-# MAGIC a escribir el codigo.
+# MAGIC - `fami_estratovivienda` → numero del 1 al 6
+# MAGIC - `fami_educacionmadre` y `fami_educacionpadre` → escala del 0 (ninguno) al 9 (postgrado)
+# MAGIC - `cole_naturaleza`, `cole_area_ubicacion`, `cole_bilingue`, `estu_genero`, `fami_tieneinternet`, `fami_tienecomputador`, `fami_tieneautomovil`, `fami_tienelavadora` → 1 o 0
+
+# COMMAND ----------
+
+
 
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC > **Solicitud:** Carga los datos de la tabla Delta `icfes_saber11`
+# MAGIC ## Paso 3
+# MAGIC Entrena un modelo **Random Forest** para predecir `punt_global`
+# MAGIC usando las variables socioeconomicas que acabamos de crear.
+# MAGIC
+# MAGIC Divide los datos en 80% entrenamiento y 20% prueba.
+# MAGIC Usa `mlflow.autolog()` para registrar el experimento automaticamente.
 
 # COMMAND ----------
 
-import pandas as pd, numpy as np
 
-df = spark.table("default.icfes_saber11").toPandas()
-print(f"{df.shape[0]:,} estudiantes")
-
-# COMMAND ----------
-
-# MAGIC %md
-# MAGIC > **Solicitud:** Convierte las columnas categoricas a numeros.
-# MAGIC > Estrato de 1 a 6, educacion de 0 (ninguno) a 9 (postgrado),
-# MAGIC > y las columnas Si/No a 1/0.
-
-# COMMAND ----------
-
-df["estrato"] = df["fami_estratovivienda"].map(
-    {"Sin Estrato":0,"Estrato 1":1,"Estrato 2":2,"Estrato 3":3,
-     "Estrato 4":4,"Estrato 5":5,"Estrato 6":6}).fillna(0).astype(int)
-
-edu = {"Ninguno":0,"Primaria incompleta":1,"Primaria completa":2,
-       "Secundaria (Bachillerato) incompleta":3,"Secundaria (Bachillerato) completa":4,
-       "T\u00e9cnica o tecnol\u00f3gica incompleta":5,"T\u00e9cnica o tecnol\u00f3gica completa":6,
-       "Educaci\u00f3n profesional incompleta":7,"Educaci\u00f3n profesional completa":8,
-       "Postgrado":9}
-df["edu_madre"] = df["fami_educacionmadre"].map(edu).fillna(0).astype(int)
-df["edu_padre"] = df["fami_educacionpadre"].map(edu).fillna(0).astype(int)
-
-for col, val in [("oficial","OFICIAL"),("rural","RURAL"),("bilingue","S"),
-                 ("hombre","M"),("internet","Si"),("computador","Si"),
-                 ("automovil","Si"),("lavadora","Si")]:
-    src = {"oficial":"cole_naturaleza","rural":"cole_area_ubicacion",
-           "bilingue":"cole_bilingue","hombre":"estu_genero",
-           "internet":"fami_tieneinternet","computador":"fami_tienecomputador",
-           "automovil":"fami_tieneautomovil","lavadora":"fami_tienelavadora"}[col]
-    df[col] = (df[src] == val).astype(int)
-
-print("Variables listas")
 
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC > **Solicitud:** Entrena un Random Forest para predecir `punt_global`
-# MAGIC > usando solo estas variables socioeconomicas. Registra el
-# MAGIC > experimento con MLflow.
+# MAGIC ## Paso 4
+# MAGIC Evalua el modelo: muestra el error promedio (MAE)
+# MAGIC y que porcentaje de la variacion explica (R2).
 
 # COMMAND ----------
 
-from sklearn.model_selection import train_test_split
-from sklearn.ensemble import RandomForestRegressor
-from sklearn.metrics import mean_absolute_error, r2_score
-import mlflow
 
-features = ["estrato","edu_madre","edu_padre","oficial","rural",
-            "bilingue","hombre","internet","computador","automovil","lavadora"]
-
-X = df[features]
-y = df["punt_global"].dropna()
-X = X.loc[y.index]
-
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-
-mlflow.set_registry_uri("databricks-uc")
-mlflow.autolog()
-modelo = RandomForestRegressor(n_estimators=200, max_depth=15, random_state=42, n_jobs=-1)
-modelo.fit(X_train, y_train)
 
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC > **Solicitud:** Que tan preciso es el modelo?
+# MAGIC ## Paso 5
+# MAGIC Crea una grafica de barras horizontales mostrando la
+# MAGIC **importancia de cada variable** en la prediccion.
+# MAGIC
+# MAGIC Esto nos dice: que factores pesan mas en el puntaje del ICFES?
 
 # COMMAND ----------
 
-y_pred = modelo.predict(X_test)
-print(f"Error promedio: {mean_absolute_error(y_test, y_pred):.0f} puntos")
-print(f"R2: {r2_score(y_test, y_pred):.3f} ({r2_score(y_test, y_pred)*100:.0f}% de variacion explicada)")
 
-# COMMAND ----------
-
-# MAGIC %md
-# MAGIC > **Solicitud:** Muestra una grafica de que variables son las mas
-# MAGIC > importantes para predecir el puntaje.
-
-# COMMAND ----------
-
-import matplotlib.pyplot as plt
-
-nombres = {"estrato":"Estrato","edu_madre":"Edu. Madre","edu_padre":"Edu. Padre",
-           "oficial":"Oficial","rural":"Rural","bilingue":"Bilingue","hombre":"Genero",
-           "internet":"Internet","computador":"Computador","automovil":"Automovil",
-           "lavadora":"Lavadora"}
-
-imp = pd.Series(modelo.feature_importances_, index=[nombres[f] for f in features]).sort_values()
-imp.plot(kind="barh", figsize=(10,6), color=plt.cm.RdYlGn(np.linspace(0.15,0.95,len(imp))))
-plt.title("Que determina tu puntaje del ICFES?", fontsize=15, fontweight="bold")
-plt.xlabel("Importancia")
-plt.tight_layout()
-plt.show()
 
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC > **Solicitud:** Predice el puntaje para dos estudiantes con
-# MAGIC > perfiles contrastantes y muestra la diferencia.
+# MAGIC ## Paso 6
+# MAGIC Predice el puntaje para dos perfiles contrastantes:
+# MAGIC
+# MAGIC **Perfil A:** Estrato 1, colegio oficial rural, mama con primaria, sin internet, sin computador
+# MAGIC
+# MAGIC **Perfil B:** Estrato 5, colegio privado bilingue, mama con postgrado, con internet y computador
+# MAGIC
+# MAGIC Muestra la diferencia en puntos.
 
 # COMMAND ----------
 
-a = modelo.predict(pd.DataFrame([dict(estrato=1,edu_madre=1,edu_padre=1,oficial=1,rural=1,bilingue=0,hombre=0,internet=0,computador=0,automovil=0,lavadora=0)]))[0]
-b = modelo.predict(pd.DataFrame([dict(estrato=5,edu_madre=9,edu_padre=8,oficial=0,rural=0,bilingue=1,hombre=1,internet=1,computador=1,automovil=1,lavadora=1)]))[0]
 
-print(f"Perfil A: Estrato 1, oficial rural, sin internet  ->  {a:.0f} puntos")
-print(f"Perfil B: Estrato 5, privado bilingue, con internet  ->  {b:.0f} puntos")
-print(f"\nDiferencia: {b-a:.0f} puntos")
