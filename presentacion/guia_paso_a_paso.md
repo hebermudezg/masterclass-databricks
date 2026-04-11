@@ -11,8 +11,13 @@
 ## Antes de la masterclass (30 min antes)
 
 ### Preparar Databricks
-1. Entrar a Databricks Free Edition
-2. Importar notebooks desde el repo de GitHub
+1. Entrar a Databricks Free Edition: https://www.databricks.com/try-databricks
+2. Conectar el repo de GitHub:
+   - En la pantalla de bienvenida, usar **"Connect to a GitHub repo"** (en "Set up your workspace")
+   - Pegar la URL: `https://github.com/hebermudezg/masterclass-databricks`
+   - Los notebooks aparecen automaticamente en el Workspace
+   - **NOTA:** La opcion "Import > URL" NO funciona con github.com en Free Edition.
+     Usar siempre "Connect to a GitHub repo" o importar archivos manualmente.
 3. Ejecutar Notebook 01 completo (la descarga de datos toma ~1 minuto)
 4. Ejecutar Notebook 02 completo (el modelo entrena en ~30 segundos)
 5. Verificar que las graficas se generen correctamente
