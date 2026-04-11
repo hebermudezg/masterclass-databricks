@@ -17,32 +17,46 @@ df.head()
 
 # COMMAND ----------
 
+# Veamos los valores unicos de las columnas categoricas clave
+for col in ["fami_estratovivienda", "fami_educacionmadre", "cole_naturaleza",
+            "cole_area_ubicacion", "cole_bilingue", "estu_genero", "fami_tieneinternet"]:
+    print(f"{col}: {sorted(df[col].unique())}")
+
+# COMMAND ----------
+
 # MAGIC %md
 # MAGIC ## Prompt 1: Regresion Lineal
 # MAGIC
 # MAGIC Empezamos con el modelo mas simple e interpretable.
 # MAGIC Los coeficientes nos dicen cuantos puntos sube o baja cada variable.
 # MAGIC
-# MAGIC > Del dataframe `df`, necesito predecir `punt_global` con una Regresion Lineal.
+# MAGIC > Con el dataframe `df` que ya esta cargado, haz lo siguiente:
 # MAGIC >
-# MAGIC > Primero imprime los valores unicos de `fami_estratovivienda`,
-# MAGIC > `fami_educacionmadre` y `fami_educacionpadre` para ver que contienen.
+# MAGIC > 1. Crea nuevas columnas numericas a partir de las categoricas
+# MAGIC >    (revisa los valores unicos de la celda anterior para usar
+# MAGIC >    los valores exactos en los mapeos):
+# MAGIC >    - `estrato`: extraer el numero de `fami_estratovivienda` (1 a 6, Sin Estrato=0)
+# MAGIC >    - `edu_madre`: codificar `fami_educacionmadre` de 0 (Ninguno) a 9 (Postgrado) segun nivel
+# MAGIC >    - `edu_padre`: igual con `fami_educacionpadre`
+# MAGIC >    - `oficial`: 1 si `cole_naturaleza` == "OFICIAL"
+# MAGIC >    - `rural`: 1 si `cole_area_ubicacion` == "RURAL"
+# MAGIC >    - `bilingue`: 1 si `cole_bilingue` == "S"
+# MAGIC >    - `hombre`: 1 si `estu_genero` == "M"
+# MAGIC >    - `internet`: 1 si `fami_tieneinternet` == "Si"
+# MAGIC >    - `computador`: 1 si `fami_tienecomputador` == "Si"
+# MAGIC >    - `automovil`: 1 si `fami_tieneautomovil` == "Si"
+# MAGIC >    - `lavadora`: 1 si `fami_tienelavadora` == "Si"
 # MAGIC >
-# MAGIC > Luego codifica todas las columnas categoricas como numeros:
-# MAGIC > - `fami_estratovivienda`: ordinal donde Estrato 1=1 hasta Estrato 6=6,
-# MAGIC >   usa los valores exactos que viste en el unique()
-# MAGIC > - `fami_educacionmadre` y `fami_educacionpadre`: ordinal de menor a mayor
-# MAGIC >   nivel educativo, usa los valores exactos que viste en el unique()
-# MAGIC > - Las columnas binarias (`cole_naturaleza`, `cole_area_ubicacion`,
-# MAGIC >   `cole_bilingue`, `estu_genero`, `fami_tieneinternet`,
-# MAGIC >   `fami_tienecomputador`, `fami_tieneautomovil`, `fami_tienelavadora`):
-# MAGIC >   convierte a 1/0
+# MAGIC > 2. Aplica `.fillna(0)` a todas las columnas nuevas
 # MAGIC >
-# MAGIC > Aplica fillna(0) para evitar errores.
-# MAGIC > Divide 80/20 con random_state=42.
-# MAGIC > Entrena la Regresion Lineal, muestra MAE y R2.
-# MAGIC > Grafica barras horizontales con los coeficientes (cuantos puntos
-# MAGIC > aporta cada variable).
+# MAGIC > 3. Define X con las 11 columnas nuevas, y con punt_global
+# MAGIC >
+# MAGIC > 4. Divide 80/20 con random_state=42
+# MAGIC >
+# MAGIC > 5. Entrena una Regresion Lineal, imprime MAE y R2
+# MAGIC >
+# MAGIC > 6. Grafica barras horizontales con los coeficientes del modelo
+# MAGIC >    (cuantos puntos aporta cada variable)
 
 # COMMAND ----------
 
@@ -55,13 +69,17 @@ df.head()
 # MAGIC
 # MAGIC Ahora un modelo mas poderoso. Y comparamos visualmente.
 # MAGIC
-# MAGIC > Con los mismos datos (X_train, y_train, X_test, y_test),
-# MAGIC > entrena un **GradientBoostingRegressor** con 200 estimators,
-# MAGIC > max_depth=5, learning_rate=0.1, random_state=42.
+# MAGIC > Con los mismos datos X_train, y_train, X_test, y_test
+# MAGIC > que ya existen de la celda anterior:
 # MAGIC >
-# MAGIC > Compara los dos modelos (Regresion Lineal vs Gradient Boosting)
-# MAGIC > en una **grafica de barras agrupadas** mostrando MAE y R2
-# MAGIC > de cada uno. Pon titulo y etiquetas claras. Indica el ganador.
+# MAGIC > 1. Entrena un GradientBoostingRegressor con n_estimators=200,
+# MAGIC >    max_depth=5, learning_rate=0.1, random_state=42
+# MAGIC >
+# MAGIC > 2. Evalua con MAE y R2
+# MAGIC >
+# MAGIC > 3. Crea una grafica de barras agrupadas comparando
+# MAGIC >    Regresion Lineal vs Gradient Boosting (MAE y R2 lado a lado).
+# MAGIC >    Indica cual modelo es mejor.
 
 # COMMAND ----------
 
@@ -70,26 +88,25 @@ df.head()
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC ## Prompt 3: Importancia de variables + prediccion de perfiles
+# MAGIC ## Prompt 3: Importancia de variables + prediccion
 # MAGIC
-# MAGIC El momento revelador: que factores pesan mas y cuanto
-# MAGIC cambia la prediccion entre dos estudiantes diferentes.
+# MAGIC El momento revelador.
 # MAGIC
-# MAGIC > Con el modelo Gradient Boosting:
+# MAGIC > Con el modelo Gradient Boosting que acabas de entrenar:
 # MAGIC >
-# MAGIC > 1. Crea una grafica de barras horizontales con la importancia
-# MAGIC >    de cada variable, ordenada de mayor a menor, con colores
-# MAGIC >    que vayan de rojo (menos importante) a verde (mas importante)
+# MAGIC > 1. Grafica barras horizontales con la importancia de cada
+# MAGIC >    variable, de mayor a menor, con colores de rojo a verde
 # MAGIC >
-# MAGIC > 2. Predice el puntaje para dos estudiantes:
-# MAGIC >    - Estudiante A: estrato=1, edu_madre=1 (primaria incompleta),
-# MAGIC >      edu_padre=1, oficial=1, rural=1, bilingue=0, hombre=0,
+# MAGIC > 2. Predice el puntaje para dos estudiantes usando las mismas
+# MAGIC >    columnas de X_train:
+# MAGIC >    - Estudiante A: estrato=1, edu_madre=1, edu_padre=1,
+# MAGIC >      oficial=1, rural=1, bilingue=0, hombre=0,
 # MAGIC >      internet=0, computador=0, automovil=0, lavadora=0
-# MAGIC >    - Estudiante B: estrato=5, edu_madre=9 (postgrado),
-# MAGIC >      edu_padre=8, oficial=0, rural=0, bilingue=1, hombre=1,
+# MAGIC >    - Estudiante B: estrato=5, edu_madre=9, edu_padre=8,
+# MAGIC >      oficial=0, rural=0, bilingue=1, hombre=1,
 # MAGIC >      internet=1, computador=1, automovil=1, lavadora=1
 # MAGIC >
-# MAGIC > 3. Imprime los puntajes predichos y la diferencia
+# MAGIC > 3. Imprime ambos puntajes y la diferencia entre ellos
 
 # COMMAND ----------
 
