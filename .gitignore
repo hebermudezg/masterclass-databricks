@@ -1,11 +1,11 @@
 # Script privado del presentador
 presentacion/script_presentador.md
 
-# Datos
-*.csv
+# Datos (excepto el dataset del proyecto)
 *.xlsx
 *.parquet
 data/
+!dataset/icfes_saber11.csv
 
 # Python
 __pycache__/
