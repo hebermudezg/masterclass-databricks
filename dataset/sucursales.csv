@@ -1,6 +1,0 @@
-sucursal_id,nombre,ciudad,departamento,direccion,fecha_apertura,tipo
-SUC001,Café Origen Centro,Bogotá,Cundinamarca,Cra 7 #32-16,2019-03-15,premium
-SUC002,Café Origen Chapinero,Bogotá,Cundinamarca,Calle 53 #13-42,2020-01-10,estandar
-SUC003,Café Origen Poblado,Medellín,Antioquia,Cra 43A #7-50,2020-06-20,premium
-SUC004,Café Origen San Fernando,Cali,Valle del Cauca,Calle 5 #38-25,2021-02-14,estandar
-SUC005,Café Origen Cabecera,Bucaramanga,Santander,Cra 35 #48-31,2022-08-01,estandar
