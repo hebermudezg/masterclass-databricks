@@ -25,14 +25,15 @@ df.head()
 # MAGIC cada variable.
 # MAGIC
 # MAGIC > Del dataframe `df`, codifica como numeros estas columnas:
-# MAGIC > - `fami_estratovivienda`: ordinal de 0 (Sin Estrato) a 6 (Estrato 6)
-# MAGIC > - `fami_educacionmadre` y `fami_educacionpadre`: ordinal de 0 (Ninguno) a 9 (Postgrado)
-# MAGIC > - `cole_naturaleza`: 1 si es OFICIAL, 0 si no
-# MAGIC > - `cole_area_ubicacion`: 1 si es RURAL, 0 si no
-# MAGIC > - `cole_bilingue`: 1 si es S, 0 si no
-# MAGIC > - `estu_genero`: 1 si es M, 0 si no
-# MAGIC > - `fami_tieneinternet`, `fami_tienecomputador`, `fami_tieneautomovil`, `fami_tienelavadora`: 1 si es Si, 0 si no
+# MAGIC > - `fami_estratovivienda`: mapear con {"Sin Estrato":0, "Estrato 1":1, "Estrato 2":2, "Estrato 3":3, "Estrato 4":4, "Estrato 5":5, "Estrato 6":6}
+# MAGIC > - `fami_educacionmadre` y `fami_educacionpadre`: mapear con {"Ninguno":0, "Primaria incompleta":1, "Primaria completa":2, "Secundaria (Bachillerato) incompleta":3, "Secundaria (Bachillerato) completa":4, "Técnica o tecnológica incompleta":5, "Técnica o tecnológica completa":6, "Educación profesional incompleta":7, "Educación profesional completa":8, "Postgrado":9}
+# MAGIC > - `cole_naturaleza`: 1 si es "OFICIAL", 0 si no
+# MAGIC > - `cole_area_ubicacion`: 1 si es "RURAL", 0 si no
+# MAGIC > - `cole_bilingue`: 1 si es "S", 0 si no
+# MAGIC > - `estu_genero`: 1 si es "M", 0 si no
+# MAGIC > - `fami_tieneinternet`, `fami_tienecomputador`, `fami_tieneautomovil`, `fami_tienelavadora`: 1 si es "Si", 0 si no
 # MAGIC >
+# MAGIC > Aplica `.fillna(0)` despues de cada mapeo para evitar NaN.
 # MAGIC > Divide 80/20 con random_state=42.
 # MAGIC > Entrena una **Regresion Lineal** para predecir `punt_global`.
 # MAGIC > Muestra el MAE, R2, y una grafica de barras horizontales con
