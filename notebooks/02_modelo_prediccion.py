@@ -125,8 +125,6 @@ for col in ["fami_estratovivienda", "fami_educacionmadre", "fami_educacionpadre"
 # MAGIC
 # MAGIC > Guarda el modelo Gradient Boosting en MLflow junto con sus
 # MAGIC > metricas (MAE y R2) para poder cargarlo y reutilizarlo despues.
-# MAGIC > Antes de guardar usa mlflow.set_registry_uri("databricks")
-# MAGIC > para evitar errores con Unity Catalog.
 # MAGIC > Imprime el run_id.
 # MAGIC > Solo guardar el modelo como artefacto del run.
 
