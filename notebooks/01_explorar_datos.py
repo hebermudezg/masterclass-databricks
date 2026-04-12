@@ -75,3 +75,6 @@ print("Tabla Delta creada: default.icfes_saber11")
 # MAGIC - Como afecta la educacion de la madre al puntaje?
 # MAGIC - Cuales son los 10 mejores departamentos?
 # MAGIC - Que porcentaje de estrato 1 supera los 300 puntos?
+# MAGIC
+# MAGIC **Bonus:** Explorar la seccion **Dashboards** en el menu lateral.
+# MAGIC Las consultas de Genie se pueden convertir en paneles de un dashboard interactivo.
