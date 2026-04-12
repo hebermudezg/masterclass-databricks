@@ -86,9 +86,8 @@ for col in ["fami_estratovivienda", "fami_educacionmadre", "fami_educacionpadre"
 # MAGIC >    subplot 1 con MAE, subplot 2 con R2. Colores distintos,
 # MAGIC >    valores encima de las barras. Indica cual modelo es mejor.
 # MAGIC >
-# MAGIC > 2. Con el mejor modelo, grafica feature_importances_ como barras
-# MAGIC >    horizontales de mayor a menor, con colormap RdYlGn.
-# MAGIC >    Usa los nombres originales de las columnas como etiquetas.
+# MAGIC > 2. Con el mejor modelo, grafica la importancia de cada variable
+# MAGIC >    como barras horizontales ordenadas de mayor a menor.
 # MAGIC >    Titulo: "Que determina tu puntaje del ICFES?"
 # MAGIC >
 # MAGIC > 3. Predice para dos estudiantes creando un DataFrame con las
