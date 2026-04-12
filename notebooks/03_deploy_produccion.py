@@ -28,15 +28,34 @@
 # MAGIC ## Prompt 2: Predecir para distintos perfiles de estudiantes
 # MAGIC
 # MAGIC > Con el modelo cargado, predice el puntaje del ICFES para
-# MAGIC > estos tres estudiantes. Crea un DataFrame con las mismas
-# MAGIC > columnas que el modelo espera (las del notebook anterior):
+# MAGIC > tres estudiantes. El modelo espera un DataFrame con estas
+# MAGIC > columnas exactas: fami_estratovivienda, fami_educacionmadre,
+# MAGIC > fami_educacionpadre, cole_naturaleza, cole_area_ubicacion,
+# MAGIC > cole_bilingue, estu_genero, fami_tieneinternet,
+# MAGIC > fami_tienecomputador, fami_tieneautomovil, fami_tienelavadora.
 # MAGIC >
-# MAGIC > - Estudiante A: Estrato 1, colegio oficial rural, mama con
-# MAGIC >   primaria incompleta, sin internet, sin computador
-# MAGIC > - Estudiante B: Estrato 5, colegio privado bilingue urbano,
-# MAGIC >   mama con postgrado, con internet y computador
-# MAGIC > - Estudiante C: Estrato 3, colegio oficial urbano, mama
-# MAGIC >   con bachillerato completo, con internet, sin computador
+# MAGIC > Los perfiles:
+# MAGIC > - Estudiante A: fami_estratovivienda="Estrato 1",
+# MAGIC >   fami_educacionmadre="Primaria incompleta",
+# MAGIC >   fami_educacionpadre="Primaria incompleta",
+# MAGIC >   cole_naturaleza="OFICIAL", cole_area_ubicacion="RURAL",
+# MAGIC >   cole_bilingue="N", estu_genero="F",
+# MAGIC >   fami_tieneinternet="No", fami_tienecomputador="No",
+# MAGIC >   fami_tieneautomovil="No", fami_tienelavadora="No"
+# MAGIC > - Estudiante B: fami_estratovivienda="Estrato 5",
+# MAGIC >   fami_educacionmadre="Postgrado",
+# MAGIC >   fami_educacionpadre="Educación profesional completa",
+# MAGIC >   cole_naturaleza="NO OFICIAL", cole_area_ubicacion="URBANO",
+# MAGIC >   cole_bilingue="S", estu_genero="M",
+# MAGIC >   fami_tieneinternet="Si", fami_tienecomputador="Si",
+# MAGIC >   fami_tieneautomovil="Si", fami_tienelavadora="Si"
+# MAGIC > - Estudiante C: fami_estratovivienda="Estrato 3",
+# MAGIC >   fami_educacionmadre="Secundaria (Bachillerato) completa",
+# MAGIC >   fami_educacionpadre="Secundaria (Bachillerato) completa",
+# MAGIC >   cole_naturaleza="OFICIAL", cole_area_ubicacion="URBANO",
+# MAGIC >   cole_bilingue="N", estu_genero="M",
+# MAGIC >   fami_tieneinternet="Si", fami_tienecomputador="No",
+# MAGIC >   fami_tieneautomovil="No", fami_tienelavadora="Si"
 # MAGIC >
 # MAGIC > Muestra los puntajes predichos y una grafica de barras
 # MAGIC > comparando los tres perfiles.
