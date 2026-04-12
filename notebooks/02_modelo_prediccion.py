@@ -80,6 +80,9 @@ for col in ["fami_estratovivienda", "fami_educacionmadre", "cole_naturaleza",
 # MAGIC > 3. Crea una grafica de barras agrupadas comparando
 # MAGIC >    Regresion Lineal vs Gradient Boosting (MAE y R2 lado a lado).
 # MAGIC >    Indica cual modelo es mejor.
+# MAGIC >
+# MAGIC > 4. Guarda el mejor modelo con mlflow: usa mlflow.set_experiment,
+# MAGIC >    mlflow.start_run, mlflow.sklearn.log_model y mlflow.log_metrics
 
 # COMMAND ----------
 
