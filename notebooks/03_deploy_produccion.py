@@ -11,9 +11,12 @@
 # MAGIC ---
 # MAGIC ## Prompt 1: Cargar el modelo desde MLflow
 # MAGIC
-# MAGIC > Busca el ultimo run de MLflow en este workspace con
-# MAGIC > mlflow.search_runs() ordenado por fecha. Carga el modelo
-# MAGIC > guardado en ese run. Imprime el run_id y las metricas.
+# MAGIC > Busca el ultimo run de MLflow con mlflow.search_runs()
+# MAGIC > ordenado por fecha. Carga el modelo guardado en ese run
+# MAGIC > usando mlflow.sklearn.load_model(f"runs:/{run_id}/model").
+# MAGIC > Usa mlflow.set_registry_uri("databricks") antes de cualquier
+# MAGIC > operacion para evitar errores con Unity Catalog.
+# MAGIC > Imprime el run_id y las metricas.
 
 # COMMAND ----------
 
