@@ -17,12 +17,13 @@ df.head()
 
 # COMMAND ----------
 
-# Valores reales de cada columna categorica
+# Estructura de las columnas que vamos a usar como features
 for col in ["fami_estratovivienda", "fami_educacionmadre", "fami_educacionpadre",
             "cole_naturaleza", "cole_area_ubicacion", "cole_bilingue",
             "estu_genero", "fami_tieneinternet", "fami_tienecomputador",
             "fami_tieneautomovil", "fami_tienelavadora"]:
-    print(f"{col}: {sorted(df[col].unique())}")
+    vals = sorted(df[col].unique())
+    print(f"{col} ({len(vals)} valores): {vals}")
 
 # COMMAND ----------
 
@@ -31,36 +32,27 @@ for col in ["fami_estratovivienda", "fami_educacionmadre", "fami_educacionpadre"
 # MAGIC ## Prompt 1: Preparar datos y entrenar Regresion Lineal
 # MAGIC
 # MAGIC > Tengo el dataframe `df` con resultados del ICFES Saber 11.
+# MAGIC > Quiero predecir `punt_global` usando estas columnas como features:
+# MAGIC > `fami_estratovivienda`, `fami_educacionmadre`, `fami_educacionpadre`,
+# MAGIC > `cole_naturaleza`, `cole_area_ubicacion`, `cole_bilingue`,
+# MAGIC > `estu_genero`, `fami_tieneinternet`, `fami_tienecomputador`,
+# MAGIC > `fami_tieneautomovil`, `fami_tienelavadora`.
 # MAGIC >
-# MAGIC > 1. Crea columnas numericas a partir de las categoricas. Mira los
-# MAGIC >    valores unicos impresos en la celda anterior y usa esos strings
-# MAGIC >    exactos para los mapeos:
-# MAGIC >    - `estrato`: de `fami_estratovivienda`. Mapear cada "Estrato X" al
-# MAGIC >      numero X (1-6), "Sin Estrato"=0. fillna(0).
-# MAGIC >    - `edu_madre`: de `fami_educacionmadre`. Mapear cada valor unico
-# MAGIC >      en orden ascendente de nivel educativo, desde 0 (Ninguno) hasta
-# MAGIC >      9 (Postgrado). Usa los strings EXACTOS del unique(). fillna(0).
-# MAGIC >    - `edu_padre`: igual que edu_madre pero desde `fami_educacionpadre`.
-# MAGIC >    - `oficial`: (`cole_naturaleza`=="OFICIAL").astype(int)
-# MAGIC >    - `rural`: (`cole_area_ubicacion`=="RURAL").astype(int)
-# MAGIC >    - `bilingue`: (`cole_bilingue`=="S").astype(int)
-# MAGIC >    - `hombre`: (`estu_genero`=="M").astype(int)
-# MAGIC >    - `internet`: (`fami_tieneinternet`=="Si").astype(int)
-# MAGIC >    - `computador`: (`fami_tienecomputador`=="Si").astype(int)
-# MAGIC >    - `automovil`: (`fami_tieneautomovil`=="Si").astype(int)
-# MAGIC >    - `lavadora`: (`fami_tienelavadora`=="Si").astype(int)
+# MAGIC > Usa sklearn.preprocessing para transformar las variables:
+# MAGIC > - OrdinalEncoder para las columnas ordinales (estrato y niveles
+# MAGIC >   de educacion), respetando el orden natural de menor a mayor.
+# MAGIC > - Las columnas binarias (Si/No, OFICIAL/NO OFICIAL, URBANO/RURAL,
+# MAGIC >   S/N, M/F) codificalas como 0/1.
+# MAGIC > - Usa ColumnTransformer para aplicar las transformaciones.
+# MAGIC > - Maneja valores desconocidos con handle_unknown="use_encoded_value",
+# MAGIC >   unknown_value=-1.
 # MAGIC >
-# MAGIC > 2. X = df[["estrato","edu_madre","edu_padre","oficial","rural","bilingue",
-# MAGIC >    "hombre","internet","computador","automovil","lavadora"]]
-# MAGIC >    y = df["punt_global"]
-# MAGIC >
-# MAGIC > 3. train_test_split 80/20, random_state=42
-# MAGIC >
-# MAGIC > 4. Entrena LinearRegression. Imprime MAE y R2.
-# MAGIC >
-# MAGIC > 5. Grafica barras horizontales con los coeficientes, ordenados por
-# MAGIC >    valor absoluto. Titulo: "Cuantos puntos aporta cada variable?"
-# MAGIC >    Poner el valor numerico al lado de cada barra.
+# MAGIC > Divide 80/20 con random_state=42.
+# MAGIC > Entrena una LinearRegression con Pipeline (transformer + modelo).
+# MAGIC > Imprime MAE y R2.
+# MAGIC > Grafica barras horizontales con los coeficientes del modelo
+# MAGIC > mostrando cuantos puntos aporta cada variable. Pon el valor
+# MAGIC > numerico al lado de cada barra.
 
 # COMMAND ----------
 
@@ -70,29 +62,26 @@ for col in ["fami_estratovivienda", "fami_educacionmadre", "fami_educacionpadre"
 
 # MAGIC %md
 # MAGIC ---
-# MAGIC ## Prompt 2: Entrenar Gradient Boosting, comparar, y guardar el mejor
+# MAGIC ## Prompt 2: Entrenar Gradient Boosting, comparar y guardar
 # MAGIC
-# MAGIC > Con X_train, y_train, X_test, y_test que ya existen:
+# MAGIC > Con los mismos datos transformados (X_train, X_test, y_train, y_test)
+# MAGIC > o el mismo ColumnTransformer del paso anterior:
 # MAGIC >
-# MAGIC > 1. Entrena GradientBoostingRegressor(n_estimators=200, max_depth=5,
-# MAGIC >    learning_rate=0.1, random_state=42). Imprime MAE y R2.
+# MAGIC > Entrena un GradientBoostingRegressor(n_estimators=200, max_depth=5,
+# MAGIC > learning_rate=0.1, random_state=42). Imprime MAE y R2.
 # MAGIC >
-# MAGIC > 2. Crea una figura con 2 subplots lado a lado comparando los dos
-# MAGIC >    modelos (Regresion Lineal vs Gradient Boosting):
-# MAGIC >    - Subplot izquierdo: barras con MAE de cada modelo
-# MAGIC >    - Subplot derecho: barras con R2 de cada modelo
-# MAGIC >    Colores distintos, valores encima de las barras, titulo general:
-# MAGIC >    "Comparacion de Modelos". Indicar el ganador.
+# MAGIC > Crea una figura con 2 subplots comparando Regresion Lineal vs
+# MAGIC > Gradient Boosting: subplot 1 con MAE, subplot 2 con R2.
+# MAGIC > Colores distintos, valores encima de las barras, titulo general.
+# MAGIC > Indica cual modelo es mejor.
 # MAGIC >
-# MAGIC > 3. Guardar el Gradient Boosting en MLflow:
-# MAGIC >    - import mlflow, mlflow.sklearn
-# MAGIC >    - mlflow.set_experiment("/masterclass-icfes")
-# MAGIC >    - Dentro de mlflow.start_run(run_name="mejor_modelo_icfes"):
-# MAGIC >      - mlflow.log_metric("mae", mae del GB)
-# MAGIC >      - mlflow.log_metric("r2", r2 del GB)
-# MAGIC >      - mlflow.sklearn.log_model(modelo_gb, artifact_path="modelo",
-# MAGIC >        registered_model_name="prediccion_icfes")
-# MAGIC >    - Imprimir el run_id y "Modelo guardado como prediccion_icfes"
+# MAGIC > Guarda el mejor modelo en MLflow:
+# MAGIC > mlflow.set_experiment("/masterclass-icfes"),
+# MAGIC > dentro de mlflow.start_run(run_name="mejor_modelo_icfes")
+# MAGIC > registra metricas con log_metric y guarda el modelo con
+# MAGIC > mlflow.sklearn.log_model(modelo, "modelo",
+# MAGIC > registered_model_name="prediccion_icfes").
+# MAGIC > Imprime el run_id.
 
 # COMMAND ----------
 
@@ -104,26 +93,35 @@ for col in ["fami_estratovivienda", "fami_educacionmadre", "fami_educacionpadre"
 # MAGIC ---
 # MAGIC ## Prompt 3: Variables mas importantes y prediccion en vivo
 # MAGIC
-# MAGIC > Con el modelo Gradient Boosting ya entrenado:
+# MAGIC > Con el modelo Gradient Boosting entrenado:
 # MAGIC >
-# MAGIC > 1. Grafica barras horizontales con feature_importances_ ordenadas
-# MAGIC >    de mayor a menor. Usa colormap plt.cm.RdYlGn. Titulo:
-# MAGIC >    "Que determina tu puntaje del ICFES?"
-# MAGIC >    Poner el valor de importancia al lado de cada barra.
+# MAGIC > Grafica feature_importances_ como barras horizontales de mayor
+# MAGIC > a menor, con colormap RdYlGn (rojo=menos, verde=mas).
+# MAGIC > Usa los nombres originales de las columnas como etiquetas.
+# MAGIC > Titulo: "Que determina tu puntaje del ICFES?"
 # MAGIC >
-# MAGIC > 2. Predice para dos estudiantes. Crear DataFrame con las mismas
-# MAGIC >    columnas de X_train (en el mismo orden):
-# MAGIC >    Estudiante A: estrato=1, edu_madre=1, edu_padre=1, oficial=1,
-# MAGIC >      rural=1, bilingue=0, hombre=0, internet=0, computador=0,
-# MAGIC >      automovil=0, lavadora=0
-# MAGIC >    Estudiante B: estrato=5, edu_madre=9, edu_padre=8, oficial=0,
-# MAGIC >      rural=0, bilingue=1, hombre=1, internet=1, computador=1,
-# MAGIC >      automovil=1, lavadora=1
+# MAGIC > Luego predice para dos estudiantes creando un DataFrame con las
+# MAGIC > columnas originales (ANTES de transformar) y pasandolo por el
+# MAGIC > pipeline o transformer:
+# MAGIC > - Estudiante A: fami_estratovivienda="Estrato 1",
+# MAGIC >   fami_educacionmadre="Primaria incompleta",
+# MAGIC >   fami_educacionpadre="Primaria incompleta",
+# MAGIC >   cole_naturaleza="OFICIAL", cole_area_ubicacion="RURAL",
+# MAGIC >   cole_bilingue="N", estu_genero="F",
+# MAGIC >   fami_tieneinternet="No", fami_tienecomputador="No",
+# MAGIC >   fami_tieneautomovil="No", fami_tienelavadora="No"
+# MAGIC > - Estudiante B: fami_estratovivienda="Estrato 5",
+# MAGIC >   fami_educacionmadre="Postgrado",
+# MAGIC >   fami_educacionpadre="Educación profesional completa",
+# MAGIC >   cole_naturaleza="NO OFICIAL", cole_area_ubicacion="URBANO",
+# MAGIC >   cole_bilingue="S", estu_genero="M",
+# MAGIC >   fami_tieneinternet="Si", fami_tienecomputador="Si",
+# MAGIC >   fami_tieneautomovil="Si", fami_tienelavadora="Si"
 # MAGIC >
-# MAGIC > 3. Imprimir:
-# MAGIC >    "Perfil A (E1, oficial rural, sin internet): XXX puntos"
-# MAGIC >    "Perfil B (E5, privado bilingue, con internet): XXX puntos"
-# MAGIC >    "Diferencia: XXX puntos"
+# MAGIC > Imprimir:
+# MAGIC > "Perfil A (E1, oficial rural, sin internet): XXX puntos"
+# MAGIC > "Perfil B (E5, privado bilingue, con internet): XXX puntos"
+# MAGIC > "Diferencia: XXX puntos"
 
 # COMMAND ----------
 
