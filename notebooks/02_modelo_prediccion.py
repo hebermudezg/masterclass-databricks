@@ -125,7 +125,8 @@ for col in ["fami_estratovivienda", "fami_educacionmadre", "fami_educacionpadre"
 # MAGIC
 # MAGIC > Guarda el modelo Gradient Boosting en MLflow junto con sus
 # MAGIC > metricas (MAE y R2) para poder cargarlo y reutilizarlo despues.
-# MAGIC > Imprime el run_id del experimento.
+# MAGIC > Usa mlflow.start_run() directamente (sin set_experiment).
+# MAGIC > Imprime el run_id.
 # MAGIC > Solo guardar el modelo como artefacto del run.
 
 # COMMAND ----------
