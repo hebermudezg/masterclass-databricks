@@ -11,12 +11,11 @@
 # MAGIC ---
 # MAGIC ## Prompt 1: Cargar el modelo desde MLflow
 # MAGIC
-# MAGIC > Busca el ultimo run de MLflow con mlflow.search_runs()
-# MAGIC > ordenado por fecha. Carga el modelo guardado en ese run
-# MAGIC > usando mlflow.sklearn.load_model(f"runs:/{run_id}/model").
-# MAGIC > Usa mlflow.set_registry_uri("databricks") antes de cualquier
-# MAGIC > operacion para evitar errores con Unity Catalog.
-# MAGIC > Imprime el run_id y las metricas.
+# MAGIC > En el notebook anterior guarde un modelo en MLflow.
+# MAGIC > No tengo Unity Catalog habilitado.
+# MAGIC > Busca el modelo en MLflow Experiments usando
+# MAGIC > mlflow.set_registry_uri("databricks") y search_runs().
+# MAGIC > Carga el modelo del run mas reciente e imprime el run_id.
 
 # COMMAND ----------
 
@@ -26,17 +25,18 @@
 
 # MAGIC %md
 # MAGIC ---
-# MAGIC ## Prompt 2: Hacer predicciones con el modelo cargado
+# MAGIC ## Prompt 2: Predecir para distintos perfiles de estudiantes
 # MAGIC
-# MAGIC > Con el modelo cargado, predice el puntaje para estos perfiles
-# MAGIC > de estudiantes (usa las mismas columnas que el modelo espera):
+# MAGIC > Con el modelo cargado, predice el puntaje del ICFES para
+# MAGIC > estos tres estudiantes. Crea un DataFrame con las mismas
+# MAGIC > columnas que el modelo espera (las del notebook anterior):
 # MAGIC >
 # MAGIC > - Estudiante A: Estrato 1, colegio oficial rural, mama con
 # MAGIC >   primaria incompleta, sin internet, sin computador
 # MAGIC > - Estudiante B: Estrato 5, colegio privado bilingue urbano,
 # MAGIC >   mama con postgrado, con internet y computador
 # MAGIC > - Estudiante C: Estrato 3, colegio oficial urbano, mama
-# MAGIC >   bachiller, con internet, sin computador
+# MAGIC >   con bachillerato completo, con internet, sin computador
 # MAGIC >
 # MAGIC > Muestra los puntajes predichos y una grafica de barras
 # MAGIC > comparando los tres perfiles.
