@@ -123,17 +123,9 @@ for col in ["fami_estratovivienda", "fami_educacionmadre", "fami_educacionpadre"
 # MAGIC ---
 # MAGIC ## Prompt 4: Guardar el mejor modelo en MLflow
 # MAGIC
-# MAGIC > Guarda el modelo Gradient Boosting en MLflow para poder
-# MAGIC > reutilizarlo despues:
-# MAGIC >
-# MAGIC > 1. mlflow.set_experiment("/masterclass-icfes")
-# MAGIC > 2. Dentro de mlflow.start_run(run_name="mejor_modelo_icfes"):
-# MAGIC >    - mlflow.log_metric("mae", el MAE del Gradient Boosting)
-# MAGIC >    - mlflow.log_metric("r2", el R2 del Gradient Boosting)
-# MAGIC >    - mlflow.sklearn.log_model(el modelo GB, artifact_path="modelo")
-# MAGIC > 3. Imprimir el run_id
-# MAGIC >
-# MAGIC > NO usar registered_model_name (no esta disponible en Free Edition).
+# MAGIC > Guarda el modelo Gradient Boosting en MLflow junto con sus
+# MAGIC > metricas (MAE y R2) para poder cargarlo y reutilizarlo despues.
+# MAGIC > Imprime el run_id del experimento.
 # MAGIC > Solo guardar el modelo como artefacto del run.
 
 # COMMAND ----------
