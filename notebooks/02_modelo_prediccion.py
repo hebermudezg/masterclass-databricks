@@ -69,11 +69,6 @@ for col in ["fami_estratovivienda", "fami_educacionmadre", "fami_educacionpadre"
 # MAGIC >
 # MAGIC > Entrena un GradientBoostingRegressor(n_estimators=200, max_depth=5,
 # MAGIC > learning_rate=0.1, random_state=42). Imprime MAE y R2.
-# MAGIC >
-# MAGIC > Crea una figura con 2 subplots comparando Regresion Lineal vs
-# MAGIC > Gradient Boosting: subplot 1 con MAE, subplot 2 con R2.
-# MAGIC > Colores distintos, valores encima de las barras, titulo general.
-# MAGIC > Indica cual modelo es mejor.
 
 # COMMAND ----------
 
@@ -83,16 +78,20 @@ for col in ["fami_estratovivienda", "fami_educacionmadre", "fami_educacionpadre"
 
 # MAGIC %md
 # MAGIC ---
-# MAGIC ## Prompt 3: Variables mas importantes y prediccion en vivo
+# MAGIC ## Prompt 3: Comparar modelos, importancia de variables y prediccion
 # MAGIC
-# MAGIC > Con el modelo Gradient Boosting entrenado:
+# MAGIC > Con los dos modelos entrenados (Regresion Lineal y Gradient Boosting):
 # MAGIC >
-# MAGIC > Grafica feature_importances_ como barras horizontales de mayor
-# MAGIC > a menor, con colormap RdYlGn (rojo=menos, verde=mas).
-# MAGIC > Usa los nombres originales de las columnas como etiquetas.
-# MAGIC > Titulo: "Que determina tu puntaje del ICFES?"
+# MAGIC > 1. Crea una figura con 2 subplots comparando ambos modelos:
+# MAGIC >    subplot 1 con MAE, subplot 2 con R2. Colores distintos,
+# MAGIC >    valores encima de las barras. Indica cual modelo es mejor.
 # MAGIC >
-# MAGIC > Luego predice para dos estudiantes creando un DataFrame con las
+# MAGIC > 2. Con el mejor modelo, grafica feature_importances_ como barras
+# MAGIC >    horizontales de mayor a menor, con colormap RdYlGn.
+# MAGIC >    Usa los nombres originales de las columnas como etiquetas.
+# MAGIC >    Titulo: "Que determina tu puntaje del ICFES?"
+# MAGIC >
+# MAGIC > 3. Predice para dos estudiantes creando un DataFrame con las
 # MAGIC > columnas originales (ANTES de transformar) y pasandolo por el
 # MAGIC > pipeline o transformer:
 # MAGIC > - Estudiante A: fami_estratovivienda="Estrato 1",
